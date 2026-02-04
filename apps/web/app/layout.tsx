@@ -1,17 +1,21 @@
 import './globals.css';
 import { Geist } from 'next/font/google';
+import { Toaster } from 'sonner';
 
 const geist = Geist({ subsets: ['latin'] });
 
 export const metadata = {
-  title: 'SettleCrypto',
-  description: 'Settle debts with crypto',
+  title: 'Weave Cash',
+  description: 'Weave your finances together',
 };
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en">
-      <body className={geist.className}>{children}</body>
+      <body className={geist.className}>
+        {children}
+        <Toaster />
+      </body>
     </html>
   );
 }
