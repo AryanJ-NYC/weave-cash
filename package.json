@@ -1,5 +1,5 @@
 {
-  "name": "settle-crypto",
+  "name": "weave-cash",
   "private": true,
   "scripts": {
     "build": "turbo run build",

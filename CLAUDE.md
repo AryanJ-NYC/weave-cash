@@ -1,0 +1,103 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Project Overview
+
+Weave Cash is a TypeScript monorepo for a financial application using pnpm workspaces with Turborepo.
+
+**Repository:** https://github.com/AryanJ-NYC/weave-cash
+
+## Commands
+
+```bash
+# Install dependencies
+pnpm install
+
+# Development (starts all apps)
+pnpm dev
+
+# Build all packages
+pnpm build
+
+# Linting and formatting
+pnpm lint
+pnpm format
+
+# Type checking
+pnpm check-types
+
+# Database commands (run from packages/database)
+pnpm db:generate    # Generate Prisma client
+pnpm db:migrate     # Create and apply migrations
+pnpm db:push        # Push schema without migrations
+pnpm db:studio      # Open Prisma Studio
+
+# Start PostgreSQL for local dev
+docker-compose up
+```
+
+## Architecture
+
+```
+weave-cash/
+├── apps/web/                 # Next.js 16 frontend (App Router, React 19)
+├── packages/
+│   ├── database/             # Prisma schema and client
+│   ├── eslint-config/        # Shared ESLint configs
+│   ├── tailwind-config/      # Shared Tailwind config
+│   └── typescript-config/    # Shared TS configs
+```
+
+### Key Technologies
+- **Frontend:** Next.js 16, React 19, Tailwind CSS 4, shadcn/ui
+- **Auth:** Better Auth with 2FA support
+- **Database:** PostgreSQL 16 via Prisma ORM
+- **Package Manager:** pnpm 9.0.0+
+
+### Authentication Flow
+- Server config: `apps/web/lib/auth.ts`
+- Client utilities: `apps/web/lib/auth-client.ts`
+- Route protection: `apps/web/proxy.ts` (Next.js 16 renamed middleware → proxy)
+- Auth API: `/api/auth/[...all]`
+
+**Auth Routes:**
+- `/login` - Email/password sign in
+- `/register` - Email/password registration
+- `/two-factor` - TOTP verification during login
+- `/settings/security` - 2FA setup (QR code, backup codes)
+
+**Route Groups:**
+- `(auth)` - Public auth pages (login, register, two-factor)
+- `(app)` - Protected pages (dashboard, settings)
+
+### Environment Variables
+Validated via `@t3-oss/env-nextjs` in `apps/web/lib/env.ts`:
+- `DATABASE_URL` - PostgreSQL connection string
+- `BETTER_AUTH_SECRET` - Auth secret key
+- `BETTER_AUTH_URL` - Auth callback URL
+- `NEXT_PUBLIC_BETTER_AUTH_URL` - Client-side auth URL
+
+## Issue Tracking
+
+This project uses **GitHub Issues**. Use the `gh` CLI:
+
+```bash
+gh issue create --title "Title" --body "Description"
+gh issue list
+gh issue view <number>
+```
+
+## Code Conventions
+
+- **Types over interfaces:** Use `type` aliases, not `interface`
+- **Newspaper pattern:** Main exports at top, types at bottom of file
+- **clsx import:** Use `import { clsx } from 'clsx/lite'` (not `'clsx'`)
+- **Path aliases:** `@/` maps to current app directory
+
+### shadcn/ui Configuration
+Initialized with `--no-css-variables` flag and neutral base color to avoid CSS variable conflicts with Tailwind v4. Components use direct color classes instead of CSS variables.
+
+## Prisma Note
+
+Prisma resolves `.env` relative to `prisma/schema.prisma`. For database commands, either run from `packages/database` directory or prefix with `DATABASE_URL="..."`.

@@ -1,9 +1,6 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
+import './lib/env';
 
-const nextConfig: NextConfig = {
-  typescript: {
-    ignoreBuildErrors: true,
-  },
-};
+const nextConfig: NextConfig = {};
 
 export default nextConfig;
