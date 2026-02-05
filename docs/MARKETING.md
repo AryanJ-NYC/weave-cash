@@ -23,16 +23,17 @@ Marketing copy and landing page guidelines for Weave Cash.
 
 ## Primary Headline
 
-**"Accept Crypto. Settle in Your Currency."**
+**"Accept Any Crypto. Receive Yours."**
 
 This headline:
 - Communicates the core value in 6 words
-- Uses "Currency" to mean cryptocurrency (contextually clear)
-- Implies flexibility on both ends (accept any, receive preferred)
+- "Any" emphasizes multi-chain flexibility
+- "Yours" is possessive and personal—merchant choice
+- Zero ambiguity about fiat
 
 ### Supporting Subheadline
 
-"Let customers pay with any crypto. You receive the currency you choose—instantly, via NEAR intents."
+"Customers pay with whatever they have. You get your preferred crypto—instantly, via NEAR intents."
 
 ## Key Copy Elements
 
@@ -55,7 +56,7 @@ This headline:
 
 1. **Create Invoice** - Set your preferred settlement currency and amount
 2. **Customer Pays** - They pay with any supported cryptocurrency
-3. **NEAR Swaps** - Intents automatically convert to your currency
+3. **NEAR Swaps** - Intents automatically convert to your crypto
 4. **You Receive** - Funds arrive in your wallet instantly
 
 ### Final CTA

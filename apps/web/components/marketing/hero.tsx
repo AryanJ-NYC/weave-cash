@@ -21,17 +21,17 @@ export function Hero() {
 
           {/* Headline */}
           <h1 className="text-4xl font-bold leading-tight tracking-tight text-slate-900 md:text-5xl lg:text-6xl dark:text-white">
-            Accept Crypto.
+            Accept Any Crypto.
             <br />
             <span className="bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent dark:from-blue-400 dark:to-blue-500">
-              Settle in Your Currency.
+              Receive Yours.
             </span>
           </h1>
 
           {/* Subheadline */}
           <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-slate-600 md:text-xl dark:text-slate-400">
-            Let customers pay with any crypto. You receive the currency you
-            choose—instantly, via NEAR intents.
+            Customers pay with whatever they have. You get your preferred
+            crypto—instantly, via NEAR intents.
           </p>
 
           {/* CTAs */}

@@ -109,7 +109,7 @@ const STEPS = [
   },
   {
     title: 'NEAR Swaps',
-    description: 'Intents automatically convert to your currency.',
+    description: 'Intents automatically convert to your crypto.',
   },
   {
     title: 'You Receive',

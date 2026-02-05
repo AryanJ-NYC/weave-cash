@@ -8,9 +8,9 @@ const outfit = Outfit({
 });
 
 export const metadata = {
-  title: 'Weave Cash - Accept Crypto. Settle in Your Currency.',
+  title: 'Weave Cash - Accept Any Crypto. Receive Yours.',
   description:
-    'Let customers pay with any crypto. You receive the currency you choose—instantly, via NEAR intents.',
+    'Customers pay with whatever they have. You get your preferred crypto—instantly, via NEAR intents.',
 };
 
 export default function RootLayout({ children }: RootLayoutProps) {

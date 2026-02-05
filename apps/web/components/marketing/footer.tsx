@@ -14,8 +14,7 @@ export function Footer() {
               Weave<span className="text-blue-600 dark:text-blue-500">Cash</span>
             </Link>
             <p className="mt-4 text-sm text-slate-600 dark:text-slate-400">
-              Accept crypto payments. Settle in your currency. Powered by NEAR
-              intents.
+              Accept any crypto. Receive yours. Powered by NEAR intents.
             </p>
           </div>
 
