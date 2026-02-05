@@ -2,7 +2,7 @@
 @import '@repo/tailwind-config';
 @import 'tw-animate-css';
 
-@custom-variant dark (&:is(.dark *));
+/* Dark mode uses system preference via Tailwind 4's default prefers-color-scheme */
 
 :root {
   --radius: 0.5rem;

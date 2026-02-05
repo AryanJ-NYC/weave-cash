@@ -4,7 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Weave Cash is a TypeScript monorepo for a financial application using pnpm workspaces with Turborepo.
+Weave Cash is a **crypto-to-crypto payment platform**. Merchants set what crypto they want to receive; customers pay in whatever crypto they have. The conversion happens invisibly.
+
+**Important:** This is crypto-to-crypto only. No fiat currencies (USD, EUR, etc.).
 
 **Repository:** https://github.com/AryanJ-NYC/weave-cash
 
