@@ -72,3 +72,36 @@ model TwoFactor {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
+
+enum InvoiceStatus {
+  PENDING
+  AWAITING_DEPOSIT
+  PROCESSING
+  COMPLETED
+  FAILED
+  REFUNDED
+  EXPIRED
+}
+
+model Invoice {
+  id             String        @id @default(uuid())
+  status         InvoiceStatus @default(PENDING)
+  receiveToken   String
+  receiveNetwork String
+  amount         String
+  walletAddress  String
+  buyerName      String?
+  buyerEmail     String?
+  buyerAddress   String?
+  payToken       String?
+  payNetwork     String?
+  depositAddress String?
+  depositMemo    String?
+  expiresAt      DateTime?
+  paidAt         DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([status])
+  @@index([walletAddress])
+}

@@ -19,10 +19,10 @@ export function CTASection() {
 
             <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Link
-                href="/register"
+                href="/create"
                 className="group inline-flex items-center justify-center rounded-lg bg-white px-8 py-3.5 text-base font-semibold text-blue-600 shadow-lg transition-all hover:bg-blue-50"
               >
-                Start Free Today
+                Create Invoice
                 <svg
                   className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1 motion-reduce:transition-none"
                   fill="none"

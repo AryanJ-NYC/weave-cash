@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 export default function MarketingLayout({ children }: MarketingLayoutProps) {
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-950">
+    <div className="bg-white dark:bg-slate-950">
       <nav className="fixed top-0 z-50 w-full border-b border-slate-200/50 bg-white/80 backdrop-blur-lg dark:border-slate-800/50 dark:bg-slate-950/80">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 md:px-6">
           <Link
