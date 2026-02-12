@@ -11,7 +11,8 @@ export function Footer() {
               href="/"
               className="text-xl font-bold tracking-tight text-slate-900 dark:text-white"
             >
-              Weave<span className="text-blue-600 dark:text-blue-500">Cash</span>
+              Weave
+              <span className="text-blue-600 dark:text-blue-500">Cash</span>
             </Link>
             <p className="mt-4 text-sm text-slate-600 dark:text-slate-400">
               Accept any crypto. Receive yours. Powered by NEAR intents.
@@ -37,13 +38,13 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Developers */}
+          {/* Company */}
           <div>
             <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
-              Developers
+              Company
             </h3>
             <ul className="mt-4 space-y-3">
-              {DEVELOPER_LINKS.map((link) => (
+              {COMPANY_LINKS.map((link) => (
                 <li key={link.label}>
                   <Link
                     href={link.href}
@@ -107,10 +108,7 @@ const PRODUCT_LINKS = [
   { label: 'Pricing', href: '/pricing' },
 ];
 
-const DEVELOPER_LINKS = [
-  { label: 'Documentation', href: '/docs' },
-  { label: 'API Reference', href: '/docs/api' },
-];
+const COMPANY_LINKS = [{ label: 'About', href: '/about' }];
 
 const LEGAL_LINKS = [
   { label: 'Privacy Policy', href: '/privacy' },
