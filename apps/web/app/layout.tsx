@@ -1,7 +1,7 @@
-import './globals.css';
 import { Outfit } from 'next/font/google';
 import { Toaster } from 'sonner';
 import { Footer } from '@/components/marketing';
+import './globals.css';
 
 const outfit = Outfit({
   subsets: ['latin'],

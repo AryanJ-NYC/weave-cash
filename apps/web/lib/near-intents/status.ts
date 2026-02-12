@@ -12,4 +12,4 @@ export async function getSwapStatus(
   return OneClickService.getExecutionStatus(depositAddress, depositMemo);
 }
 
-export { GetExecutionStatusResponse };
+export type { GetExecutionStatusResponse };

@@ -7,6 +7,7 @@ import {
   TOKENS,
   TOKEN_NETWORK_MAP,
   validateWalletAddress,
+  type Network,
 } from '@/lib/invoice';
 
 export async function POST(
@@ -120,6 +121,3 @@ const quoteRequestSchema = z
     }
   });
 
-// --- Types ---
-
-type Network = 'Bitcoin' | 'Ethereum' | 'Solana';

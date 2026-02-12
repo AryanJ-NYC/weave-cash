@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { PaymentFlow } from './payment-flow';
+import { PaymentFlow } from './_components/payment-flow';
 
 export default async function InvoicePaymentPage({
   params,
@@ -43,12 +43,8 @@ export default async function InvoicePaymentPage({
           <PaymentFlow
             invoiceId={invoice.id}
             status={invoice.status}
-            amount={invoice.amount}
-            receiveToken={invoice.receiveToken}
-            receiveNetwork={invoice.receiveNetwork}
             depositAddress={invoice.depositAddress}
             depositMemo={invoice.depositMemo}
-            expiresAt={invoice.expiresAt?.toISOString() ?? null}
             paidAt={invoice.paidAt?.toISOString() ?? null}
           />
         </CardContent>
