@@ -30,14 +30,21 @@ export default function CreateInvoicePage() {
   const [invoiceId, setInvoiceId] = useState<string | null>(null);
 
   if (invoiceId) {
-    return <InvoiceSuccess invoiceId={invoiceId} onReset={() => setInvoiceId(null)} />;
+    return (
+      <InvoiceSuccess
+        invoiceId={invoiceId}
+        onReset={() => setInvoiceId(null)}
+      />
+    );
   }
 
   return (
     <div className="mx-auto max-w-lg px-4 py-16 md:py-24">
       <Card className="border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
         <CardHeader>
-          <CardTitle className="text-2xl text-slate-900 dark:text-white">Create Invoice</CardTitle>
+          <CardTitle className="text-2xl text-slate-900 dark:text-white">
+            Create Invoice
+          </CardTitle>
           <CardDescription className="text-slate-600 dark:text-slate-400">
             Choose your preferred crypto and share a payment link with your
             customer.
@@ -71,7 +78,9 @@ function InvoiceSuccess({
     <div className="mx-auto max-w-lg px-4 py-16 md:py-24">
       <Card className="border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl text-slate-900 dark:text-white">Invoice Created</CardTitle>
+          <CardTitle className="text-2xl text-slate-900 dark:text-white">
+            Invoice Created
+          </CardTitle>
           <CardDescription className="text-slate-600 dark:text-slate-400">
             Share this link with your customer to receive payment.
           </CardDescription>
@@ -82,13 +91,25 @@ function InvoiceSuccess({
           </div>
 
           <div className="flex w-full items-center gap-2">
-            <Input value={invoiceUrl} readOnly className="rounded-lg border-slate-300 bg-white text-sm focus:ring-2 focus:ring-blue-600 dark:border-slate-700 dark:bg-slate-900" />
-            <Button variant="outline" onClick={handleCopy} className="shrink-0 border-slate-300 dark:border-slate-700">
+            <Input
+              value={invoiceUrl}
+              readOnly
+              className="rounded-lg border-slate-300 bg-white text-sm focus:ring-2 focus:ring-blue-600 dark:border-slate-700 dark:bg-slate-900"
+            />
+            <Button
+              variant="outline"
+              onClick={handleCopy}
+              className="shrink-0 border-slate-300 dark:border-slate-700"
+            >
               {copied ? 'Copied!' : 'Copy'}
             </Button>
           </div>
 
-          <Button variant="secondary" onClick={onReset} className="w-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700">
+          <Button
+            variant="secondary"
+            onClick={onReset}
+            className="w-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700"
+          >
             Create Another Invoice
           </Button>
         </CardContent>
@@ -115,7 +136,9 @@ function InvoiceForm({ onSuccess }: { onSuccess: (id: string) => void }) {
   function handleTokenChange(value: string) {
     setToken(value as Token);
     const availableNetworks = getNetworksForToken(value as Token);
-    setNetwork(availableNetworks.length === 1 ? availableNetworks[0] : '');
+    setNetwork(
+      availableNetworks.length === 1 ? (availableNetworks[0] ?? '') : ''
+    );
     setAddressError('');
     setWalletAddress('');
   }
@@ -168,14 +191,23 @@ function InvoiceForm({ onSuccess }: { onSuccess: (id: string) => void }) {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-5">
       <div className="flex flex-col gap-2">
-        <Label htmlFor="token" className="text-slate-900 dark:text-white">Token</Label>
+        <Label htmlFor="token" className="text-slate-900 dark:text-white">
+          Token
+        </Label>
         <Select value={token} onValueChange={handleTokenChange}>
-          <SelectTrigger id="token" className="w-full rounded-lg border-slate-300 bg-white focus:ring-2 focus:ring-blue-600 dark:border-slate-700 dark:bg-slate-900">
+          <SelectTrigger
+            id="token"
+            className="w-full rounded-lg border-slate-300 bg-white focus:ring-2 focus:ring-blue-600 dark:border-slate-700 dark:bg-slate-900"
+          >
             <SelectValue placeholder="Select token" />
           </SelectTrigger>
           <SelectContent className="border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
             {TOKENS.map((t) => (
-              <SelectItem key={t} value={t} className="focus:bg-slate-100 dark:focus:bg-slate-800">
+              <SelectItem
+                key={t}
+                value={t}
+                className="focus:bg-slate-100 dark:focus:bg-slate-800"
+              >
                 {t}
               </SelectItem>
             ))}
@@ -185,21 +217,33 @@ function InvoiceForm({ onSuccess }: { onSuccess: (id: string) => void }) {
       </div>
 
       <div className="flex flex-col gap-2">
-        <Label htmlFor="network" className="text-slate-900 dark:text-white">Network</Label>
+        <Label htmlFor="network" className="text-slate-900 dark:text-white">
+          Network
+        </Label>
         {networks.length === 1 ? (
-          <Input id="network" value={network} disabled className="rounded-lg border-slate-300 bg-white dark:border-slate-700 dark:bg-slate-900" />
-        ) : (
-          <Select
+          <Input
+            id="network"
             value={network}
-            onValueChange={setNetwork}
-            disabled={!token}
-          >
-            <SelectTrigger id="network" className="w-full rounded-lg border-slate-300 bg-white focus:ring-2 focus:ring-blue-600 dark:border-slate-700 dark:bg-slate-900">
-              <SelectValue placeholder={token ? 'Select network' : 'Select a token first'} />
+            disabled
+            className="rounded-lg border-slate-300 bg-white dark:border-slate-700 dark:bg-slate-900"
+          />
+        ) : (
+          <Select value={network} onValueChange={setNetwork} disabled={!token}>
+            <SelectTrigger
+              id="network"
+              className="w-full rounded-lg border-slate-300 bg-white focus:ring-2 focus:ring-blue-600 dark:border-slate-700 dark:bg-slate-900"
+            >
+              <SelectValue
+                placeholder={token ? 'Select network' : 'Select a token first'}
+              />
             </SelectTrigger>
             <SelectContent className="border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
               {networks.map((n) => (
-                <SelectItem key={n} value={n} className="focus:bg-slate-100 dark:focus:bg-slate-800">
+                <SelectItem
+                  key={n}
+                  value={n}
+                  className="focus:bg-slate-100 dark:focus:bg-slate-800"
+                >
                   {n}
                 </SelectItem>
               ))}
@@ -210,7 +254,9 @@ function InvoiceForm({ onSuccess }: { onSuccess: (id: string) => void }) {
       </div>
 
       <div className="flex flex-col gap-2">
-        <Label htmlFor="amount" className="text-slate-900 dark:text-white">Amount{token ? ` (in ${token})` : ''}</Label>
+        <Label htmlFor="amount" className="text-slate-900 dark:text-white">
+          Amount{token ? ` (in ${token})` : ''}
+        </Label>
         <Input
           id="amount"
           inputMode="decimal"
@@ -223,17 +269,24 @@ function InvoiceForm({ onSuccess }: { onSuccess: (id: string) => void }) {
       </div>
 
       <div className="flex flex-col gap-2">
-        <Label htmlFor="walletAddress" className="text-slate-900 dark:text-white">{network ? `Your ${network} Address` : 'Your Wallet Address'}</Label>
+        <Label
+          htmlFor="walletAddress"
+          className="text-slate-900 dark:text-white"
+        >
+          {network ? `Your ${network} Address` : 'Your Wallet Address'}
+        </Label>
         <Input
           id="walletAddress"
-          placeholder={network ? `Enter your ${network} address` : 'Enter your wallet address'}
+          placeholder={
+            network
+              ? `Enter your ${network} address`
+              : 'Enter your wallet address'
+          }
           value={walletAddress}
           onChange={(e) => handleAddressChange(e.target.value)}
           className="rounded-lg border-slate-300 bg-white focus:ring-2 focus:ring-blue-600 dark:border-slate-700 dark:bg-slate-900"
         />
-        {addressError && (
-          <p className="text-sm text-red-500">{addressError}</p>
-        )}
+        {addressError && <p className="text-sm text-red-500">{addressError}</p>}
         <FieldError errors={fieldErrors.walletAddress} />
       </div>
 
@@ -244,7 +297,12 @@ function InvoiceForm({ onSuccess }: { onSuccess: (id: string) => void }) {
 
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-2">
-            <Label htmlFor="buyerName" className="text-slate-900 dark:text-white">Name</Label>
+            <Label
+              htmlFor="buyerName"
+              className="text-slate-900 dark:text-white"
+            >
+              Name
+            </Label>
             <Input
               id="buyerName"
               placeholder="Customer name"
@@ -255,7 +313,12 @@ function InvoiceForm({ onSuccess }: { onSuccess: (id: string) => void }) {
           </div>
 
           <div className="flex flex-col gap-2">
-            <Label htmlFor="buyerEmail" className="text-slate-900 dark:text-white">Email</Label>
+            <Label
+              htmlFor="buyerEmail"
+              className="text-slate-900 dark:text-white"
+            >
+              Email
+            </Label>
             <Input
               id="buyerEmail"
               type="email"
@@ -268,7 +331,12 @@ function InvoiceForm({ onSuccess }: { onSuccess: (id: string) => void }) {
           </div>
 
           <div className="flex flex-col gap-2">
-            <Label htmlFor="buyerAddress" className="text-slate-900 dark:text-white">Address</Label>
+            <Label
+              htmlFor="buyerAddress"
+              className="text-slate-900 dark:text-white"
+            >
+              Address
+            </Label>
             <Input
               id="buyerAddress"
               placeholder="Customer address"

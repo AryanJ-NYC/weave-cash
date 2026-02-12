@@ -5,6 +5,7 @@
     "DATABASE_URL",
     "BETTER_AUTH_SECRET",
     "BETTER_AUTH_URL",
+    "DEFUSE_JWT_TOKEN",
     "NEXT_PUBLIC_BETTER_AUTH_URL"
   ],
   "tasks": {
