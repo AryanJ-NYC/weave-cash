@@ -49,13 +49,6 @@ const CHAINS = [
   { name: 'Bitcoin', icon: '₿', color: 'text-orange-500' },
   { name: 'Ethereum', icon: 'Ξ', color: 'text-blue-400' },
   { name: 'Solana', icon: '◎', color: 'text-purple-400' },
-  { name: 'NEAR', icon: 'Ⓝ', color: 'text-green-400' },
-  { name: 'Polygon', icon: '⬡', color: 'text-violet-500' },
-  { name: 'Arbitrum', icon: '🔷', color: '' },
-  { name: 'Optimism', icon: '🔴', color: '' },
-  { name: 'Avalanche', icon: '🔺', color: '' },
-  { name: 'BNB Chain', icon: '🟡', color: '' },
-  { name: 'Base', icon: '🔵', color: '' },
 ];
 
 const TRUST_BADGES = [

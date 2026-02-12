@@ -37,12 +37,6 @@ export function CTASection() {
                   />
                 </svg>
               </Link>
-              <Link
-                href="/login"
-                className="inline-flex items-center justify-center rounded-lg border border-white/30 px-8 py-3.5 text-base font-semibold text-white transition-all hover:bg-white/10"
-              >
-                Sign In
-              </Link>
             </div>
 
             <p className="mt-6 text-sm text-blue-200">

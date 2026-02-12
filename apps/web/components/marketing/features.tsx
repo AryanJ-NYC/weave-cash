@@ -81,7 +81,7 @@ const VALUE_PROPS = [
   {
     title: 'Multi-Chain',
     description:
-      'Accept BTC, ETH, SOL, and 20+ tokens. Your customers pay with whatever crypto they have.',
+      'Accept BTC, ETH, SOL, USDC, and USDT across Bitcoin, Ethereum, and Solana networks.',
     icon: '🔗',
   },
   {

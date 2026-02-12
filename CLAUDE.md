@@ -53,32 +53,13 @@ weave-cash/
 
 ### Key Technologies
 - **Frontend:** Next.js 16, React 19, Tailwind CSS 4, shadcn/ui
-- **Auth:** Better Auth with 2FA support
 - **Database:** PostgreSQL 16 via Prisma ORM
 - **Package Manager:** pnpm 9.0.0+
-
-### Authentication Flow
-- Server config: `apps/web/lib/auth.ts`
-- Client utilities: `apps/web/lib/auth-client.ts`
-- Route protection: `apps/web/proxy.ts` (Next.js 16 renamed middleware → proxy)
-- Auth API: `/api/auth/[...all]`
-
-**Auth Routes:**
-- `/login` - Email/password sign in
-- `/register` - Email/password registration
-- `/two-factor` - TOTP verification during login
-- `/settings/security` - 2FA setup (QR code, backup codes)
-
-**Route Groups:**
-- `(auth)` - Public auth pages (login, register, two-factor)
-- `(app)` - Protected pages (dashboard, settings)
 
 ### Environment Variables
 Validated via `@t3-oss/env-nextjs` in `apps/web/lib/env.ts`:
 - `DATABASE_URL` - PostgreSQL connection string
-- `BETTER_AUTH_SECRET` - Auth secret key
-- `BETTER_AUTH_URL` - Auth callback URL
-- `NEXT_PUBLIC_BETTER_AUTH_URL` - Client-side auth URL
+- `DEFUSE_JWT_TOKEN` - JWT token for the Defuse 1-Click API
 
 ## Issue Tracking
 

@@ -79,7 +79,7 @@ export function Hero() {
                 </div>
               ))}
               <div className="flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm font-medium text-slate-500 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400">
-                +20 more
+                3 networks
               </div>
             </div>
           </div>
@@ -96,5 +96,6 @@ const SUPPORTED_CHAINS = [
   { name: 'BTC', icon: '₿' },
   { name: 'ETH', icon: 'Ξ' },
   { name: 'SOL', icon: '◎' },
-  { name: 'NEAR', icon: 'Ⓝ' },
+  { name: 'USDC', icon: '$' },
+  { name: 'USDT', icon: '₮' },
 ];
