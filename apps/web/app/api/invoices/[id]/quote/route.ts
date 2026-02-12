@@ -15,7 +15,17 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const body = await request.json();
+
+  let body: unknown;
+  try {
+    body = await request.json();
+  } catch {
+    console.error(`Invalid JSON body for invoice ${id}`);
+    return NextResponse.json(
+      { error: 'Invalid JSON body' },
+      { status: 400 }
+    );
+  }
 
   const result = await quoteRequestSchema.safeParseAsync(body);
   if (!result.success) {
@@ -26,6 +36,8 @@ export async function POST(
   }
 
   const { payToken, payNetwork, refundAddress } = result.data;
+
+  console.log(`Quote request for invoice ${id}: payToken=${payToken}, payNetwork=${payNetwork}`);
 
   const invoice = await prisma.invoice.findUnique({ where: { id } });
   if (!invoice) {
@@ -39,24 +51,32 @@ export async function POST(
     );
   }
 
+  const swapInput = {
+    payToken,
+    payNetwork: payNetwork as Network,
+    receiveToken: invoice.receiveToken as typeof payToken,
+    receiveNetwork: invoice.receiveNetwork as Network,
+    amount: invoice.amount,
+    recipientAddress: invoice.walletAddress,
+    refundAddress,
+  };
+  console.log(`Swap quote input for invoice ${id}:`, swapInput);
+
   let quoteResponse;
   try {
-    quoteResponse = await getSwapQuote({
-      payToken,
-      payNetwork: payNetwork as Network,
-      receiveToken: invoice.receiveToken as typeof payToken,
-      receiveNetwork: invoice.receiveNetwork as Network,
-      amount: invoice.amount,
-      recipientAddress: invoice.walletAddress,
-      refundAddress,
-    });
+    quoteResponse = await getSwapQuote(swapInput);
   } catch (error) {
     if (error instanceof ApiError) {
+      console.error(
+        `Failed to get swap quote for invoice ${id}:`,
+        error.body ?? error.message
+      );
       return NextResponse.json(
-        { error: 'Failed to get swap quote' },
+        { error: error.body?.message ?? 'Failed to get swap quote' },
         { status: 502 }
       );
     }
+    console.error(`Unexpected error getting swap quote for invoice ${id}:`, error);
     throw error;
   }
 
