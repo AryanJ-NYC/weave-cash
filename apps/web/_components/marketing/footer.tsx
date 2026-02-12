@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 
 export function Footer() {
@@ -7,12 +8,13 @@ export function Footer() {
         <div className="grid gap-8 md:grid-cols-4">
           {/* Brand */}
           <div className="md:col-span-1">
-            <Link
-              href="/"
-              className="text-xl font-bold tracking-tight text-slate-900 dark:text-white"
-            >
-              Weave
-              <span className="text-blue-600 dark:text-blue-500">Cash</span>
+            <Link href="/">
+              <Image
+                src="/logo-name.png"
+                alt="Weave Cash"
+                width={150}
+                height={40}
+              />
             </Link>
             <p className="mt-4 text-sm text-slate-600 dark:text-slate-400">
               Accept any crypto. Receive yours. Powered by NEAR intents.
