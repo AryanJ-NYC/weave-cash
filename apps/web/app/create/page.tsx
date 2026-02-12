@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { QRCodeSVG } from 'qrcode.react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -27,17 +27,6 @@ import {
 import type { Token, Network, CreateInvoiceInput } from '@/lib/invoice';
 
 export default function CreateInvoicePage() {
-  const [invoiceId, setInvoiceId] = useState<string | null>(null);
-
-  if (invoiceId) {
-    return (
-      <InvoiceSuccess
-        invoiceId={invoiceId}
-        onReset={() => setInvoiceId(null)}
-      />
-    );
-  }
-
   return (
     <div className="mx-auto max-w-lg px-4 py-16 md:py-24">
       <Card className="border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
@@ -51,74 +40,15 @@ export default function CreateInvoicePage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <InvoiceForm onSuccess={setInvoiceId} />
+          <InvoiceForm />
         </CardContent>
       </Card>
     </div>
   );
 }
 
-function InvoiceSuccess({
-  invoiceId,
-  onReset,
-}: {
-  invoiceId: string;
-  onReset: () => void;
-}) {
-  const [copied, setCopied] = useState(false);
-  const invoiceUrl = `${window.location.origin}/invoice/${invoiceId}`;
-
-  async function handleCopy() {
-    await navigator.clipboard.writeText(invoiceUrl);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  }
-
-  return (
-    <div className="mx-auto max-w-lg px-4 py-16 md:py-24">
-      <Card className="border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl text-slate-900 dark:text-white">
-            Invoice Created
-          </CardTitle>
-          <CardDescription className="text-slate-600 dark:text-slate-400">
-            Share this link with your customer to receive payment.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="flex flex-col items-center gap-6">
-          <div className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
-            <QRCodeSVG value={invoiceUrl} size={200} />
-          </div>
-
-          <div className="flex w-full items-center gap-2">
-            <Input
-              value={invoiceUrl}
-              readOnly
-              className="rounded-lg border-slate-300 bg-white text-sm focus:ring-2 focus:ring-blue-600 dark:border-slate-700 dark:bg-slate-900"
-            />
-            <Button
-              variant="outline"
-              onClick={handleCopy}
-              className="shrink-0 border-slate-300 dark:border-slate-700"
-            >
-              {copied ? 'Copied!' : 'Copy'}
-            </Button>
-          </div>
-
-          <Button
-            variant="secondary"
-            onClick={onReset}
-            className="w-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700"
-          >
-            Create Another Invoice
-          </Button>
-        </CardContent>
-      </Card>
-    </div>
-  );
-}
-
-function InvoiceForm({ onSuccess }: { onSuccess: (id: string) => void }) {
+function InvoiceForm() {
+  const router = useRouter();
   const [token, setToken] = useState<Token | ''>('');
   const [network, setNetwork] = useState('');
   const [amount, setAmount] = useState('');
@@ -182,7 +112,7 @@ function InvoiceForm({ onSuccess }: { onSuccess: (id: string) => void }) {
       }
 
       const { id } = await res.json();
-      onSuccess(id);
+      router.push(`/invoice/${id}`);
     } finally {
       setSubmitting(false);
     }
