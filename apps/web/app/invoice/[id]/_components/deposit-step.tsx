@@ -6,22 +6,23 @@ import {
   QueryClientProvider,
   useQuery,
 } from '@tanstack/react-query';
+import { QRCodeSVG } from 'qrcode.react';
 import { Label } from '@/_components/ui/label';
 import type { QuoteResponse } from './payment-flow';
 import { CopyableField } from './copyable-field';
 
-export function AwaitingPaymentStep({
+export function DepositStep({
   invoiceId,
   depositAddress,
   depositMemo,
   quote,
   onTerminal,
-}: AwaitingPaymentStepProps) {
+}: DepositStepProps) {
   const [queryClient] = useState(() => new QueryClient());
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AwaitingPaymentContent
+      <DepositContent
         invoiceId={invoiceId}
         depositAddress={depositAddress}
         depositMemo={depositMemo}
@@ -32,13 +33,13 @@ export function AwaitingPaymentStep({
   );
 }
 
-function AwaitingPaymentContent({
+function DepositContent({
   invoiceId,
   depositAddress,
   depositMemo,
   quote,
   onTerminal,
-}: AwaitingPaymentStepProps) {
+}: DepositStepProps) {
   const { data } = useQuery({
     queryKey: ['invoice-status', invoiceId],
     queryFn: async () => {
@@ -52,18 +53,21 @@ function AwaitingPaymentContent({
         : POLL_INTERVAL_MS,
   });
 
-  const currentStatus = data?.status ?? 'AWAITING_DEPOSIT';
-  const payInfo =
-    data?.amountIn && data?.payToken
-      ? { amountIn: data.amountIn, payToken: data.payToken }
-      : quote;
-
   useEffect(() => {
     if (data && TERMINAL_STATUSES.has(data.status)) {
-      onTerminal();
+      onTerminal({ status: data.status, paidAt: data.paidAt ?? null });
     }
   }, [data, onTerminal]);
 
+  const address = quote?.depositAddress ?? depositAddress;
+  const memo = quote?.depositMemo ?? depositMemo;
+  const payInfo =
+    quote ??
+    (data?.amountIn && data?.payToken
+      ? { amountIn: data.amountIn, payToken: data.payToken }
+      : null);
+
+  const currentStatus = data?.status ?? 'AWAITING_DEPOSIT';
   const statusText =
     currentStatus === 'PROCESSING'
       ? 'Processing swap...'
@@ -71,7 +75,28 @@ function AwaitingPaymentContent({
 
   return (
     <div className="flex flex-col gap-5">
-      <div className="flex flex-col items-center gap-3 py-4">
+      {payInfo && (
+        <div className="flex flex-col gap-3 rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-800/50">
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-slate-500 dark:text-slate-400">
+              Amount to Send
+            </span>
+            <span className="text-lg font-semibold text-slate-900 dark:text-white">
+              {payInfo.amountIn} {payInfo.payToken}
+            </span>
+          </div>
+        </div>
+      )}
+
+      {address && (
+        <div className="flex flex-col items-center gap-4">
+          <div className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
+            <QRCodeSVG value={address} size={180} />
+          </div>
+        </div>
+      )}
+
+      <div className="flex flex-col items-center gap-3 py-2">
         <div className="flex items-center gap-2">
           <span className="h-3 w-3 animate-pulse rounded-full bg-blue-500" />
           <span className="text-sm font-medium text-slate-900 dark:text-white">
@@ -83,28 +108,19 @@ function AwaitingPaymentContent({
         </p>
       </div>
 
-      {payInfo && (
-        <div className="flex flex-col gap-2">
-          <Label className="text-slate-900 dark:text-white">
-            Amount to Send
-          </Label>
-          <CopyableField value={payInfo.amountIn} label={payInfo.payToken} />
-        </div>
-      )}
-
-      {depositAddress && (
+      {address && (
         <div className="flex flex-col gap-2">
           <Label className="text-slate-900 dark:text-white">
             Deposit Address
           </Label>
-          <CopyableField value={depositAddress} />
+          <CopyableField value={address} />
         </div>
       )}
 
-      {depositMemo && (
+      {memo && (
         <div className="flex flex-col gap-2">
           <Label className="text-slate-900 dark:text-white">Memo</Label>
-          <CopyableField value={depositMemo} />
+          <CopyableField value={memo} />
         </div>
       )}
     </div>
@@ -120,16 +136,22 @@ const TERMINAL_STATUSES = new Set([
   'EXPIRED',
 ]);
 
-type AwaitingPaymentStepProps = {
+type DepositStepProps = {
   invoiceId: string;
   depositAddress: string | null;
   depositMemo: string | null;
   quote: QuoteResponse | null;
-  onTerminal: () => void;
+  onTerminal: (info: TerminalInfo) => void;
+};
+
+export type TerminalInfo = {
+  status: string;
+  paidAt: string | null;
 };
 
 type StatusResponse = {
   status: string;
   amountIn?: string;
   payToken?: string;
+  paidAt?: string;
 };

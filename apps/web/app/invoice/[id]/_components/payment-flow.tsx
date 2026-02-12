@@ -2,35 +2,34 @@
 
 import { useState } from 'react';
 import { SelectCryptoStep } from './select-crypto-step';
-import { ShowDepositStep } from './show-deposit-step';
-import { AwaitingPaymentStep } from './awaiting-payment-step';
+import { DepositStep, type TerminalInfo } from './deposit-step';
 import { TerminalStep } from './terminal-step';
 
 export function PaymentFlow(props: PaymentFlowProps) {
   const [step, setStep] = useState<Step>(() => getInitialStep(props));
   const [quote, setQuote] = useState<QuoteResponse | null>(null);
+  const [terminalInfo, setTerminalInfo] = useState<TerminalInfo | null>(null);
 
   if (step === 'TERMINAL') {
-    return <TerminalStep status={props.status} paidAt={props.paidAt} />;
-  }
-
-  if (step === 'AWAITING_PAYMENT') {
     return (
-      <AwaitingPaymentStep
-        invoiceId={props.invoiceId}
-        depositAddress={props.depositAddress}
-        depositMemo={props.depositMemo}
-        quote={quote}
-        onTerminal={() => setStep('TERMINAL')}
+      <TerminalStep
+        status={terminalInfo?.status ?? props.status}
+        paidAt={terminalInfo?.paidAt ?? props.paidAt}
       />
     );
   }
 
-  if (step === 'SHOW_DEPOSIT') {
+  if (step === 'DEPOSIT') {
     return (
-      <ShowDepositStep
-        quote={quote!}
-        onConfirmSent={() => setStep('AWAITING_PAYMENT')}
+      <DepositStep
+        invoiceId={props.invoiceId}
+        depositAddress={props.depositAddress}
+        depositMemo={props.depositMemo}
+        quote={quote}
+        onTerminal={(info) => {
+          setTerminalInfo(info);
+          setStep('TERMINAL');
+        }}
       />
     );
   }
@@ -40,7 +39,7 @@ export function PaymentFlow(props: PaymentFlowProps) {
       invoiceId={props.invoiceId}
       onQuoteReceived={(q) => {
         setQuote(q);
-        setStep('SHOW_DEPOSIT');
+        setStep('DEPOSIT');
       }}
     />
   );
@@ -49,11 +48,11 @@ export function PaymentFlow(props: PaymentFlowProps) {
 function getInitialStep(props: PaymentFlowProps): Step {
   const terminalStatuses = ['COMPLETED', 'FAILED', 'REFUNDED', 'EXPIRED'];
   if (terminalStatuses.includes(props.status)) return 'TERMINAL';
-  if (props.depositAddress) return 'AWAITING_PAYMENT';
+  if (props.depositAddress) return 'DEPOSIT';
   return 'SELECT_CRYPTO';
 }
 
-type Step = 'SELECT_CRYPTO' | 'SHOW_DEPOSIT' | 'AWAITING_PAYMENT' | 'TERMINAL';
+type Step = 'SELECT_CRYPTO' | 'DEPOSIT' | 'TERMINAL';
 
 export type PaymentFlowProps = {
   invoiceId: string;
