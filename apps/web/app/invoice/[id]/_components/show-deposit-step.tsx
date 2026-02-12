@@ -18,16 +18,6 @@ export function ShowDepositStep({ quote, onConfirmSent }: ShowDepositStepProps) 
             {quote.amountIn} {quote.payToken}
           </span>
         </div>
-        {quote.timeEstimate && (
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-slate-500 dark:text-slate-400">
-              Estimated Time
-            </span>
-            <span className="text-sm font-medium text-slate-900 dark:text-white">
-              {quote.timeEstimate}
-            </span>
-          </div>
-        )}
       </div>
 
       <div className="flex flex-col items-center gap-4">

@@ -18,9 +18,15 @@ export async function getSwapQuote(params: {
 }): Promise<QuoteResponse> {
   initNearSdk();
 
-  const originAsset = getDefuseAssetId(params.payToken, params.payNetwork);
-  const destinationAsset = getDefuseAssetId(params.receiveToken, params.receiveNetwork);
-  const amountInSmallestUnits = toSmallestUnits(params.amount, params.receiveToken);
+  const originAsset = await getDefuseAssetId(params.payToken, params.payNetwork);
+  const destinationAsset = await getDefuseAssetId(
+    params.receiveToken,
+    params.receiveNetwork,
+  );
+  const amountInSmallestUnits = await toSmallestUnits(
+    params.amount,
+    params.receiveToken,
+  );
 
   const deadline = new Date(Date.now() + 30 * 60 * 1000).toISOString();
 
@@ -39,6 +45,8 @@ export async function getSwapQuote(params: {
     deadline,
     referral: 'weave-cash',
   };
+
+  console.log('Defuse quote request:', JSON.stringify(quoteRequest, null, 2));
 
   return OneClickService.getQuote(quoteRequest);
 }
