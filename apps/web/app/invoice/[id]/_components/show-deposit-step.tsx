@@ -1,8 +1,8 @@
 'use client';
 
 import { QRCodeSVG } from 'qrcode.react';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
+import { Button } from '@/_components/ui/button';
+import { Label } from '@/_components/ui/label';
 import type { QuoteResponse } from './payment-flow';
 import { CopyableField } from './copyable-field';
 

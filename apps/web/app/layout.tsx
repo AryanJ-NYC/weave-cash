@@ -1,8 +1,8 @@
 import Link from 'next/link';
 import { Outfit } from 'next/font/google';
 import { Toaster } from 'sonner';
-import { Footer } from '@/components/marketing';
-import { ShrinkingLogo } from '@/components/shrinking-logo';
+import { Footer } from '@/_components/marketing';
+import { ShrinkingLogo } from '@/_components/shrinking-logo';
 import './globals.css';
 
 const outfit = Outfit({

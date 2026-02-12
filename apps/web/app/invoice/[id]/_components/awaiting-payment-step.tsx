@@ -6,7 +6,7 @@ import {
   QueryClientProvider,
   useQuery,
 } from '@tanstack/react-query';
-import { Label } from '@/components/ui/label';
+import { Label } from '@/_components/ui/label';
 import type { QuoteResponse } from './payment-flow';
 import { CopyableField } from './copyable-field';
 

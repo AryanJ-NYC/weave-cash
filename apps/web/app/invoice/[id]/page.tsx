@@ -6,7 +6,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
+} from '@/_components/ui/card';
 import { PaymentFlow } from './_components/payment-flow';
 
 export default async function InvoicePaymentPage({

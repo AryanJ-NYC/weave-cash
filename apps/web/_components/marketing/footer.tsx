@@ -108,7 +108,10 @@ const PRODUCT_LINKS = [
   { label: 'Pricing', href: '/pricing' },
 ];
 
-const COMPANY_LINKS = [{ label: 'About', href: '/about' }];
+const COMPANY_LINKS = [
+  { label: 'About', href: '/about' },
+  { label: 'Blog', href: '/blogs/web3-payments' },
+];
 
 const LEGAL_LINKS = [
   { label: 'Privacy Policy', href: '/privacy' },

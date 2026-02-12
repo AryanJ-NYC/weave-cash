@@ -1,4 +1,4 @@
-import { Hero, Features, SocialProof, CTASection } from '@/components/marketing';
+import { Hero, Features, SocialProof, CTASection } from '@/_components/marketing';
 
 export default function HomePage() {
   return (
