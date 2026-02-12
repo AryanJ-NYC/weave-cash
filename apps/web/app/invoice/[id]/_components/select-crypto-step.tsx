@@ -153,6 +153,10 @@ export function SelectCryptoStep({ invoiceId, onQuoteReceived }: SelectCryptoSte
         <Label htmlFor="refundAddress" className="text-slate-900 dark:text-white">
           {network ? `Your ${network} Refund Address` : 'Your Refund Address'}
         </Label>
+        <p className="text-pretty text-xs text-slate-500 dark:text-slate-400">
+          If the swap fails or cannot be completed, your funds will be returned
+          to this address.
+        </p>
         <Input
           id="refundAddress"
           placeholder={
