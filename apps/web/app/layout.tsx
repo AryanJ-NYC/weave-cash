@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Outfit } from 'next/font/google';
 import { Toaster } from 'sonner';
@@ -10,10 +11,17 @@ const outfit = Outfit({
   variable: '--font-outfit',
 });
 
-export const metadata = {
+export const metadata: Metadata = {
+  metadataBase: new URL('https://weavecash.com'),
   title: 'Weave Cash - Accept Any Crypto. Receive Yours.',
   description:
     'Customers pay with whatever they have. You get your preferred crypto—instantly, via NEAR intents.',
+  openGraph: {
+    siteName: 'Weave Cash',
+  },
+  twitter: {
+    card: 'summary_large_image',
+  },
 };
 
 export default function RootLayout({ children }: RootLayoutProps) {
