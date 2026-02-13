@@ -1,10 +1,8 @@
 import { NextResponse } from 'next/server';
 import { ApiError } from '@defuse-protocol/one-click-sdk-typescript';
 import { prisma } from '@repo/database';
-import {
-  getSwapStatus,
-  type GetExecutionStatusResponse,
-} from '@/lib/near-intents';
+import { getSwapStatus, type GetExecutionStatusResponse } from '@/lib/near-intents/status';
+import type { InvoiceStatusResponse } from '@/lib/invoice/payment';
 
 export async function GET(
   _request: Request,
@@ -31,8 +29,7 @@ export async function GET(
         invoice.depositMemo || undefined
       );
 
-      amountIn =
-        sdkStatus.quoteResponse.quote.amountInFormatted ?? null;
+      amountIn = sdkStatus.quoteResponse.quote.amountInFormatted ?? null;
 
       const mappedStatus = mapSdkStatusToAppStatus(sdkStatus);
       if (mappedStatus && mappedStatus !== currentStatus) {
@@ -41,10 +38,7 @@ export async function GET(
             ? { status: mappedStatus, paidAt: new Date() }
             : { status: mappedStatus };
 
-        await prisma.invoice.update({
-          where: { id },
-          data: updateData,
-        });
+        await prisma.invoice.update({ data: updateData, where: { id } });
 
         currentStatus = mappedStatus;
         if (mappedStatus === 'COMPLETED') {
@@ -71,7 +65,7 @@ export async function GET(
     expiresAt: invoice.expiresAt?.toISOString() ?? null,
     payToken: invoice.payToken ?? null,
     amountIn,
-  });
+  } satisfies InvoiceStatusResponse);
 }
 
 // --- Helpers ---

@@ -5,7 +5,7 @@ import {
 import type { QuoteResponse } from '@defuse-protocol/one-click-sdk-typescript';
 import { getDefuseAssetId, toSmallestUnits } from './assets';
 import { initNearSdk } from './client';
-import type { Token, Network } from '@/lib/invoice';
+import type { Token, Network } from '@/lib/invoice/tokens';
 
 export async function getSwapQuote(params: {
   payToken: Token;

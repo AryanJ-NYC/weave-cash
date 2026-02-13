@@ -7,6 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/_components/ui/card';
+import { getSwapStatus } from '@/lib/near-intents/status';
 import { PaymentFlow } from './_components/payment-flow';
 
 export default async function InvoicePaymentPage({
@@ -19,6 +20,19 @@ export default async function InvoicePaymentPage({
 
   if (!invoice) {
     notFound();
+  }
+
+  let amountIn: string | null = null;
+  if (invoice.depositAddress) {
+    try {
+      const sdkStatus = await getSwapStatus(
+        invoice.depositAddress,
+        invoice.depositMemo ?? undefined,
+      );
+      amountIn = sdkStatus.quoteResponse.quote.amountInFormatted;
+    } catch {
+      // SDK call failed; amountIn will load on first poll
+    }
   }
 
   return (
@@ -46,6 +60,9 @@ export default async function InvoicePaymentPage({
             depositAddress={invoice.depositAddress}
             depositMemo={invoice.depositMemo}
             paidAt={invoice.paidAt?.toISOString() ?? null}
+            amountIn={amountIn}
+            payToken={invoice.payToken ?? null}
+            expiresAt={invoice.expiresAt?.toISOString() ?? null}
           />
         </CardContent>
       </Card>

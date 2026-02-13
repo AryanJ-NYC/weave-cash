@@ -12,13 +12,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/_components/ui/select';
-import {
-  TOKENS,
-  getNetworksForToken,
-  validateWalletAddress,
-  type Network,
-} from '@/lib/invoice';
-import type { QuoteResponse } from './payment-flow';
+import { TOKENS, getNetworksForToken, type Token, type Network } from '@/lib/invoice/tokens';
+import { validateWalletAddress } from '@/lib/invoice/validation';
+import type { PaymentQuote } from '@/lib/invoice/payment';
 
 export function SelectCryptoStep({ invoiceId, onQuoteReceived }: SelectCryptoStepProps) {
   const [token, setToken] = useState<Token | ''>('');
@@ -193,9 +189,7 @@ export function SelectCryptoStep({ invoiceId, onQuoteReceived }: SelectCryptoSte
   );
 }
 
-type Token = (typeof TOKENS)[number];
-
 type SelectCryptoStepProps = {
   invoiceId: string;
-  onQuoteReceived: (quote: QuoteResponse) => void;
+  onQuoteReceived: (quote: PaymentQuote) => void;
 };

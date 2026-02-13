@@ -1,13 +1,15 @@
 'use client';
 
 import { useState } from 'react';
+import { isTerminalStatus, type TerminalInfo } from '@/lib/invoice/status';
+import type { PaymentQuote } from '@/lib/invoice/payment';
 import { SelectCryptoStep } from './select-crypto-step';
-import { DepositStep, type TerminalInfo } from './deposit-step';
+import { DepositStep } from './deposit-step';
 import { TerminalStep } from './terminal-step';
 
 export function PaymentFlow(props: PaymentFlowProps) {
   const [step, setStep] = useState<Step>(() => getInitialStep(props));
-  const [quote, setQuote] = useState<QuoteResponse | null>(null);
+  const [quote, setQuote] = useState<PaymentQuote | null>(null);
   const [terminalInfo, setTerminalInfo] = useState<TerminalInfo | null>(null);
 
   if (step === 'TERMINAL') {
@@ -25,6 +27,9 @@ export function PaymentFlow(props: PaymentFlowProps) {
         invoiceId={props.invoiceId}
         depositAddress={props.depositAddress}
         depositMemo={props.depositMemo}
+        amountIn={props.amountIn}
+        payToken={props.payToken}
+        expiresAt={props.expiresAt}
         quote={quote}
         onTerminal={(info) => {
           setTerminalInfo(info);
@@ -46,8 +51,7 @@ export function PaymentFlow(props: PaymentFlowProps) {
 }
 
 function getInitialStep(props: PaymentFlowProps): Step {
-  const terminalStatuses = ['COMPLETED', 'FAILED', 'REFUNDED', 'EXPIRED'];
-  if (terminalStatuses.includes(props.status)) return 'TERMINAL';
+  if (isTerminalStatus(props.status)) return 'TERMINAL';
   if (props.depositAddress) return 'DEPOSIT';
   return 'SELECT_CRYPTO';
 }
@@ -60,12 +64,8 @@ export type PaymentFlowProps = {
   depositAddress: string | null;
   depositMemo: string | null;
   paidAt: string | null;
+  amountIn: string | null;
+  payToken: string | null;
+  expiresAt: string | null;
 };
 
-export type QuoteResponse = {
-  amountIn: string;
-  payToken: string;
-  depositAddress: string;
-  depositMemo?: string;
-  timeEstimate?: string;
-};

@@ -1,21 +1,16 @@
 import { z } from 'zod';
 import WAValidator from 'multicoin-address-validator';
+import {
+  TOKENS,
+  TOKEN_NETWORK_MAP,
+  NETWORK_CURRENCY_MAP,
+  type Network,
+} from './tokens';
 
-export const TOKENS = ['USDC', 'USDT', 'ETH', 'BTC', 'SOL'] as const;
-
-export const TOKEN_NETWORK_MAP = {
-  USDC: ['Ethereum', 'Solana'],
-  USDT: ['Ethereum', 'Solana'],
-  ETH: ['Ethereum'],
-  BTC: ['Bitcoin'],
-  SOL: ['Solana'],
-} as const satisfies Record<Token, readonly Network[]>;
-
-export function getNetworksForToken(token: Token): readonly Network[] {
-  return TOKEN_NETWORK_MAP[token];
-}
-
-export function validateWalletAddress(address: string, network: Network): boolean {
+export function validateWalletAddress(
+  address: string,
+  network: Network
+): boolean {
   const currencyName = NETWORK_CURRENCY_MAP[network];
   return WAValidator.validate(address, currencyName);
 }
@@ -27,14 +22,18 @@ export const createInvoiceSchema = z
     amount: z
       .string()
       .min(1, 'Amount is required')
-      .refine((v) => !isNaN(Number(v)) && Number(v) > 0, 'Must be a positive number'),
+      .refine(
+        (v) => !isNaN(Number(v)) && Number(v) > 0,
+        'Must be a positive number'
+      ),
     walletAddress: z.string().min(1, 'Wallet address is required'),
     buyerName: z.string().optional(),
     buyerEmail: z.string().email('Invalid email').optional().or(z.literal('')),
     buyerAddress: z.string().optional(),
   })
   .superRefine((data, ctx) => {
-    const validNetworks: readonly Network[] = TOKEN_NETWORK_MAP[data.receiveToken];
+    const validNetworks: readonly Network[] =
+      TOKEN_NETWORK_MAP[data.receiveToken];
     if (!validNetworks.includes(data.receiveNetwork as Network)) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
@@ -44,7 +43,9 @@ export const createInvoiceSchema = z
       return;
     }
 
-    if (!validateWalletAddress(data.walletAddress, data.receiveNetwork as Network)) {
+    if (
+      !validateWalletAddress(data.walletAddress, data.receiveNetwork as Network)
+    ) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: `Invalid wallet address for ${data.receiveNetwork}`,
@@ -53,12 +54,6 @@ export const createInvoiceSchema = z
     }
   });
 
-const NETWORK_CURRENCY_MAP = {
-  Bitcoin: 'btc',
-  Ethereum: 'eth',
-  Solana: 'sol',
-} as const;
+type CreateInvoiceInput = z.input<typeof createInvoiceSchema>;
 
-export type Token = (typeof TOKENS)[number];
-export type Network = keyof typeof NETWORK_CURRENCY_MAP;
-export type CreateInvoiceInput = z.input<typeof createInvoiceSchema>;
+export type { CreateInvoiceInput };

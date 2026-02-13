@@ -19,12 +19,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/_components/ui/select';
-import {
-  TOKENS,
-  getNetworksForToken,
-  validateWalletAddress,
-} from '@/lib/invoice';
-import type { Token, Network, CreateInvoiceInput } from '@/lib/invoice';
+import { TOKENS, getNetworksForToken, type Token, type Network } from '@/lib/invoice/tokens';
+import { validateWalletAddress, type CreateInvoiceInput } from '@/lib/invoice/validation';
 
 export default function CreateInvoicePage() {
   return (

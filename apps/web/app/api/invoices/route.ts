@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@repo/database';
-import { createInvoiceSchema } from '@/lib/invoice';
+import { createInvoiceSchema } from '@/lib/invoice/validation';
 
 export async function POST(request: Request) {
   const body = await request.json();

@@ -2,13 +2,9 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { ApiError } from '@defuse-protocol/one-click-sdk-typescript';
 import { prisma } from '@repo/database';
-import { getSwapQuote } from '@/lib/near-intents';
-import {
-  TOKENS,
-  TOKEN_NETWORK_MAP,
-  validateWalletAddress,
-  type Network,
-} from '@/lib/invoice';
+import { getSwapQuote } from '@/lib/near-intents/quote';
+import { TOKENS, TOKEN_NETWORK_MAP, type Network } from '@/lib/invoice/tokens';
+import { validateWalletAddress } from '@/lib/invoice/validation';
 
 export async function POST(
   request: Request,

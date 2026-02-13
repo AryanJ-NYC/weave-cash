@@ -2,8 +2,7 @@ import {
   OneClickService,
   TokenResponse,
 } from '@defuse-protocol/one-click-sdk-typescript';
-import { TOKEN_NETWORK_MAP } from '@/lib/invoice';
-import type { Token, Network } from '@/lib/invoice';
+import { TOKEN_NETWORK_MAP, type Token, type Network } from '@/lib/invoice/tokens';
 import { initNearSdk } from './client';
 
 export async function getDefuseAssetId(
