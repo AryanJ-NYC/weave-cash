@@ -62,7 +62,15 @@ export default function RootLayout({ children }: RootLayoutProps) {
           <main className="pt-32">{children}</main>
         </div>
         <Footer />
-        <Toaster />
+        <Toaster
+          theme="system"
+          toastOptions={{
+            classNames: {
+              toast:
+                '!bg-white !text-slate-900 !border-slate-200 dark:!bg-slate-900 dark:!text-white dark:!border-slate-800',
+            },
+          }}
+        />
       </body>
     </html>
   );

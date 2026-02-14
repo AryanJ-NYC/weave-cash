@@ -2,12 +2,14 @@ import { notFound } from 'next/navigation';
 import { prisma } from '@repo/database';
 import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from '@/_components/ui/card';
 import { getSwapStatus } from '@/lib/near-intents/status';
+import { CopyLinkButton } from './_components/copy-link-button';
 import { PaymentFlow } from './_components/payment-flow';
 
 export default async function InvoicePaymentPage({
@@ -42,9 +44,12 @@ export default async function InvoicePaymentPage({
           <CardTitle className="text-2xl text-slate-900 dark:text-white">
             Pay Invoice
           </CardTitle>
-          <CardDescription className="text-slate-600 dark:text-slate-400">
+          <CardDescription className="text-pretty text-slate-600 dark:text-slate-400">
             Complete your payment by selecting your preferred cryptocurrency.
           </CardDescription>
+          <CardAction>
+            <CopyLinkButton />
+          </CardAction>
         </CardHeader>
         <CardContent className="flex flex-col gap-6">
           <InvoiceSummary

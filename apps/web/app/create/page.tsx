@@ -1,7 +1,9 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRef, useState } from 'react';
+import Link from 'next/link';
+import { Check, CircleCheck, Copy } from 'lucide-react';
+import { toast } from 'sonner';
 import { Button } from '@/_components/ui/button';
 import { Input } from '@/_components/ui/input';
 import { Label } from '@/_components/ui/label';
@@ -23,6 +25,19 @@ import { TOKENS, getNetworksForToken, type Token, type Network } from '@/lib/inv
 import { validateWalletAddress, type CreateInvoiceInput } from '@/lib/invoice/validation';
 
 export default function CreateInvoicePage() {
+  const [createdInvoiceId, setCreatedInvoiceId] = useState<string | null>(null);
+
+  if (createdInvoiceId) {
+    return (
+      <div className="mx-auto max-w-lg px-4 py-16 md:py-24">
+        <InvoiceCreatedView
+          invoiceId={createdInvoiceId}
+          onCreateAnother={() => setCreatedInvoiceId(null)}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="mx-auto max-w-lg px-4 py-16 md:py-24">
       <Card className="border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
@@ -36,15 +51,82 @@ export default function CreateInvoicePage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <InvoiceForm />
+          <InvoiceForm onCreated={setCreatedInvoiceId} />
         </CardContent>
       </Card>
     </div>
   );
 }
 
-function InvoiceForm() {
-  const router = useRouter();
+function InvoiceCreatedView({ invoiceId, onCreateAnother }: InvoiceCreatedViewProps) {
+  const [copied, setCopied] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout>>(null);
+  const invoiceUrl = `${window.location.origin}/invoice/${invoiceId}`;
+
+  function handleCopy() {
+    navigator.clipboard.writeText(invoiceUrl);
+    toast.success('Invoice link copied to clipboard');
+    setCopied(true);
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => setCopied(false), 2000);
+  }
+
+  return (
+    <Card className="border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+      <CardHeader className="items-center text-center">
+        <CircleCheck className="col-span-full mb-2 h-12 w-12 justify-self-center text-green-500" />
+        <CardTitle className="text-2xl text-slate-900 dark:text-white">
+          Invoice Created
+        </CardTitle>
+        <CardDescription className="text-slate-600 dark:text-slate-400">
+          Share this link with your customer to receive payment.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-4">
+        <Input
+          readOnly
+          value={invoiceUrl}
+          onFocus={(e) => e.target.select()}
+          className="rounded-lg border-slate-300 bg-slate-50 text-sm text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
+        />
+        <Button
+          onClick={handleCopy}
+          className="w-full rounded-lg bg-blue-600 text-white shadow-lg shadow-blue-600/25 hover:bg-blue-700 hover:shadow-xl hover:shadow-blue-600/30 dark:bg-blue-500 dark:shadow-blue-500/25 dark:hover:bg-blue-600"
+        >
+          {copied ? (
+            <>
+              <Check className="h-4 w-4" />
+              Copied!
+            </>
+          ) : (
+            <>
+              <Copy className="h-4 w-4" />
+              Copy invoice link
+            </>
+          )}
+        </Button>
+        <div className="flex gap-3">
+          <Button
+            variant="outline"
+            onClick={onCreateAnother}
+            className="flex-1 rounded-lg border-slate-300 text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+          >
+            Create another invoice
+          </Button>
+          <Button
+            variant="outline"
+            asChild
+            className="flex-1 rounded-lg border-slate-300 text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+          >
+            <Link href={`/invoice/${invoiceId}`}>View invoice</Link>
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function InvoiceForm({ onCreated }: { onCreated: (id: string) => void }) {
   const [token, setToken] = useState<Token | ''>('');
   const [network, setNetwork] = useState('');
   const [amount, setAmount] = useState('');
@@ -108,7 +190,7 @@ function InvoiceForm() {
       }
 
       const { id } = await res.json();
-      router.push(`/invoice/${id}`);
+      onCreated(id);
     } finally {
       setSubmitting(false);
     }
@@ -289,3 +371,8 @@ function FieldError({ errors }: { errors?: string[] }) {
   if (!errors?.length) return null;
   return <p className="text-sm text-red-500">{errors[0]}</p>;
 }
+
+type InvoiceCreatedViewProps = {
+  invoiceId: string;
+  onCreateAnother: () => void;
+};
