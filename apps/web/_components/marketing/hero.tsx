@@ -24,14 +24,14 @@ export function Hero() {
             Accept Any Crypto.
             <br />
             <span className="bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent dark:from-blue-400 dark:to-blue-500">
-              Receive Yours.
+              Store Your Value.
             </span>
           </h1>
 
           {/* Subheadline */}
-          <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-slate-600 md:text-xl dark:text-slate-400">
-            Customers pay with whatever they have. You get your preferred
-            crypto—instantly, via NEAR intents.
+          <p className="mx-auto mt-6 max-w-xl text-pretty text-lg leading-relaxed text-slate-600 md:text-xl dark:text-slate-400">
+            Buyer pays in any coin. Receive your preferred coin. Instantly, via
+            NEAR Intents.
           </p>
 
           {/* CTAs */}
@@ -78,9 +78,6 @@ export function Hero() {
                   {chain.name}
                 </div>
               ))}
-              <div className="flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm font-medium text-slate-500 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400">
-                3 networks
-              </div>
             </div>
           </div>
         </div>

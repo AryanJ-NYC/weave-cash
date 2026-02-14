@@ -13,9 +13,9 @@ const outfit = Outfit({
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://weavecash.com'),
-  title: 'Weave Cash - Accept Any Crypto. Receive Yours.',
+  title: 'Weave Cash - Accept Any Crypto. Store Your Value.',
   description:
-    'Customers pay with whatever they have. You get your preferred crypto—instantly, via NEAR intents.',
+    'Buyer pays in any coin. Receive your preferred coin. Instantly, via NEAR Intents.',
   openGraph: {
     siteName: 'Weave Cash',
   },
@@ -29,24 +29,37 @@ export default function RootLayout({ children }: RootLayoutProps) {
     <html lang="en">
       <body className={outfit.className}>
         <div className="bg-white dark:bg-slate-950">
-          <nav className="fixed top-0 z-50 w-full border-b border-slate-200/50 bg-white/80 backdrop-blur-lg dark:border-slate-800/50 dark:bg-slate-950/80">
-            <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 transition-all duration-300 md:px-6">
-              <Link href="/">
-                <ShrinkingLogo />
-              </Link>
-
-              <div className="flex items-center gap-2">
-                <Link
-                  href="/create"
-                  className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
-                >
-                  Create Invoice
-                </Link>
-              </div>
+          <div className="fixed top-0 z-50 w-full">
+            <div className="bg-blue-600 px-4 py-2 text-center text-xs text-white sm:text-sm dark:bg-blue-500">
+              No sign-in, no fee crypto invoices.{' '}
+              <a
+                href="https://github.com/AryanJ-NYC/weave-cash"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline-offset-2 hover:underline"
+              >
+                Open source
+              </a>
             </div>
-          </nav>
+            <nav className="w-full border-b border-slate-200/50 bg-white/80 backdrop-blur-lg dark:border-slate-800/50 dark:bg-slate-950/80">
+              <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 transition-all duration-300 md:px-6">
+                <Link href="/">
+                  <ShrinkingLogo />
+                </Link>
 
-          <main className="pt-24">{children}</main>
+                <div className="flex items-center gap-2">
+                  <Link
+                    href="/create"
+                    className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
+                  >
+                    Create Invoice
+                  </Link>
+                </div>
+              </div>
+            </nav>
+          </div>
+
+          <main className="pt-32">{children}</main>
         </div>
         <Footer />
         <Toaster />
