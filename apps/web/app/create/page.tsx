@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { Button } from '@/_components/ui/button';
 import { Input } from '@/_components/ui/input';
 import { Label } from '@/_components/ui/label';
+import { Textarea } from '@/_components/ui/textarea';
 import {
   Card,
   CardContent,
@@ -134,6 +135,7 @@ function InvoiceForm({ onCreated }: { onCreated: (id: string) => void }) {
   const [buyerName, setBuyerName] = useState('');
   const [buyerEmail, setBuyerEmail] = useState('');
   const [buyerAddress, setBuyerAddress] = useState('');
+  const [description, setDescription] = useState('');
 
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
   const [addressError, setAddressError] = useState('');
@@ -174,6 +176,7 @@ function InvoiceForm({ onCreated }: { onCreated: (id: string) => void }) {
       ...(buyerName && { buyerName }),
       ...(buyerEmail && { buyerEmail }),
       ...(buyerAddress && { buyerAddress }),
+      ...(description && { description }),
     };
 
     try {
@@ -343,16 +346,40 @@ function InvoiceForm({ onCreated }: { onCreated: (id: string) => void }) {
               htmlFor="buyerAddress"
               className="text-slate-900 dark:text-white"
             >
-              Address
+              Physical Billing Address
             </Label>
             <Input
               id="buyerAddress"
-              placeholder="Customer address"
+              placeholder="Customer billing address"
               value={buyerAddress}
               onChange={(e) => setBuyerAddress(e.target.value)}
               className="rounded-lg border-slate-300 bg-white focus:ring-2 focus:ring-blue-600 dark:border-slate-700 dark:bg-slate-900"
             />
           </div>
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <Label
+          htmlFor="description"
+          className="text-slate-900 dark:text-white"
+        >
+          Sale Description
+        </Label>
+        <Textarea
+          id="description"
+          placeholder="What is this payment for?"
+          rows={3}
+          maxLength={500}
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          className="resize-none rounded-lg border-slate-300 bg-white focus:ring-2 focus:ring-blue-600 dark:border-slate-700 dark:bg-slate-900"
+        />
+        <div className="flex justify-between">
+          <FieldError errors={fieldErrors.description} />
+          <span className="ml-auto text-xs text-slate-500 dark:text-slate-400">
+            {description.length} / 500
+          </span>
         </div>
       </div>
 

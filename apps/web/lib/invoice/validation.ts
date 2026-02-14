@@ -30,6 +30,10 @@ export const createInvoiceSchema = z
     buyerName: z.string().optional(),
     buyerEmail: z.string().email('Invalid email').optional().or(z.literal('')),
     buyerAddress: z.string().optional(),
+    description: z
+      .string()
+      .max(500, 'Description must be 500 characters or less')
+      .optional(),
   })
   .superRefine((data, ctx) => {
     const validNetworks: readonly Network[] =

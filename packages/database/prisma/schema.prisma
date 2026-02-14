@@ -24,6 +24,7 @@ model Invoice {
   receiveNetwork String
   amount         String
   walletAddress  String
+  description    String?
   buyerName      String?
   buyerEmail     String?
   buyerAddress   String?

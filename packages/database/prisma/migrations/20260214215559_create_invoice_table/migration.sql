@@ -9,6 +9,7 @@ CREATE TABLE "Invoice" (
     "receiveNetwork" TEXT NOT NULL,
     "amount" TEXT NOT NULL,
     "walletAddress" TEXT NOT NULL,
+    "description" TEXT,
     "buyerName" TEXT,
     "buyerEmail" TEXT,
     "buyerAddress" TEXT,

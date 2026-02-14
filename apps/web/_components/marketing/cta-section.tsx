@@ -11,10 +11,10 @@ export function CTASection() {
 
           <div className="relative">
             <h2 className="text-3xl font-bold tracking-tight text-white md:text-4xl lg:text-5xl">
-              Ready to accept crypto payments?
+              Want to accept crypto payments?
             </h2>
             <p className="mx-auto mt-6 max-w-xl text-lg text-blue-100 md:text-xl">
-              Start receiving crypto in minutes. No setup fees, no custody risk.
+              Get started immediately.
             </p>
 
             <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">

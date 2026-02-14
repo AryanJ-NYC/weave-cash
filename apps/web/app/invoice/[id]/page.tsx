@@ -57,6 +57,7 @@ export default async function InvoicePaymentPage({
             receiveToken={invoice.receiveToken}
             receiveNetwork={invoice.receiveNetwork}
             status={invoice.status}
+            description={invoice.description}
           />
 
           <PaymentFlow
@@ -80,6 +81,7 @@ function InvoiceSummary({
   receiveToken,
   receiveNetwork,
   status,
+  description,
 }: InvoiceSummaryProps) {
   return (
     <div className="flex flex-col gap-3 rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-800/50">
@@ -105,6 +107,16 @@ function InvoiceSummary({
         </span>
         <StatusBadge status={status} />
       </div>
+      {description && (
+        <div className="flex flex-col gap-1 border-t border-slate-200 pt-3 mt-3 dark:border-slate-800">
+          <span className="text-sm text-slate-500 dark:text-slate-400">
+            Description
+          </span>
+          <span className="text-sm text-slate-900 dark:text-white">
+            {description}
+          </span>
+        </div>
+      )}
     </div>
   );
 }
@@ -168,4 +180,5 @@ type InvoiceSummaryProps = {
   receiveToken: string;
   receiveNetwork: string;
   status: string;
+  description: string | null;
 };
