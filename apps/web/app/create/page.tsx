@@ -22,8 +22,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/_components/ui/select';
-import { TOKENS, getNetworksForToken, type Token, type Network } from '@/lib/invoice/tokens';
-import { validateWalletAddress, type CreateInvoiceInput } from '@/lib/invoice/validation';
+import { TOKENS, type Token } from '@/lib/invoice/tokens';
+import { useTokenNetwork } from '@/lib/invoice/use-token-network';
+import type { CreateInvoiceInput } from '@/lib/invoice/validation';
 
 export default function CreateInvoicePage() {
   const [createdInvoiceId, setCreatedInvoiceId] = useState<string | null>(null);
@@ -64,12 +65,16 @@ function InvoiceCreatedView({ invoiceId, onCreateAnother }: InvoiceCreatedViewPr
   const timerRef = useRef<ReturnType<typeof setTimeout>>(null);
   const invoiceUrl = `${window.location.origin}/invoice/${invoiceId}`;
 
-  function handleCopy() {
-    navigator.clipboard.writeText(invoiceUrl);
-    toast.success('Invoice link copied to clipboard');
-    setCopied(true);
-    if (timerRef.current) clearTimeout(timerRef.current);
-    timerRef.current = setTimeout(() => setCopied(false), 2000);
+  async function handleCopy() {
+    try {
+      await navigator.clipboard.writeText(invoiceUrl);
+      toast.success('Invoice link copied to clipboard');
+      setCopied(true);
+      if (timerRef.current) clearTimeout(timerRef.current);
+      timerRef.current = setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast.error('Failed to copy link');
+    }
   }
 
   return (
@@ -128,44 +133,30 @@ function InvoiceCreatedView({ invoiceId, onCreateAnother }: InvoiceCreatedViewPr
 }
 
 function InvoiceForm({ onCreated }: { onCreated: (id: string) => void }) {
-  const [token, setToken] = useState<Token | ''>('');
-  const [network, setNetwork] = useState('');
+  const {
+    token,
+    network,
+    networks,
+    address: walletAddress,
+    addressError,
+    handleTokenChange,
+    handleNetworkChange,
+    handleAddressChange,
+  } = useTokenNetwork();
   const [amount, setAmount] = useState('');
-  const [walletAddress, setWalletAddress] = useState('');
   const [buyerName, setBuyerName] = useState('');
   const [buyerEmail, setBuyerEmail] = useState('');
   const [buyerAddress, setBuyerAddress] = useState('');
   const [description, setDescription] = useState('');
 
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
-  const [addressError, setAddressError] = useState('');
+  const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
-
-  const networks = token ? getNetworksForToken(token) : [];
-
-  function handleTokenChange(value: string) {
-    setToken(value as Token);
-    const availableNetworks = getNetworksForToken(value as Token);
-    setNetwork(
-      availableNetworks.length === 1 ? (availableNetworks[0] ?? '') : ''
-    );
-    setAddressError('');
-    setWalletAddress('');
-  }
-
-  function handleAddressChange(value: string) {
-    setWalletAddress(value);
-    if (value && network) {
-      const valid = validateWalletAddress(value, network as Network);
-      setAddressError(valid ? '' : `Invalid wallet address for ${network}`);
-    } else {
-      setAddressError('');
-    }
-  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setFieldErrors({});
+    setError('');
     setSubmitting(true);
 
     const body: CreateInvoiceInput = {
@@ -187,13 +178,19 @@ function InvoiceForm({ onCreated }: { onCreated: (id: string) => void }) {
       });
 
       if (!res.ok) {
-        const data = await res.json();
-        setFieldErrors(data.error ?? {});
+        try {
+          const data = await res.json();
+          setFieldErrors(data.error ?? {});
+        } catch {
+          setError('Something went wrong. Please try again.');
+        }
         return;
       }
 
       const { id } = await res.json();
       onCreated(id);
+    } catch {
+      setError('Network error. Please try again.');
     } finally {
       setSubmitting(false);
     }
@@ -203,7 +200,7 @@ function InvoiceForm({ onCreated }: { onCreated: (id: string) => void }) {
     <form onSubmit={handleSubmit} className="flex flex-col gap-5">
       <div className="flex flex-col gap-2">
         <Label htmlFor="token" className="text-slate-900 dark:text-white">
-          Token
+          Token<span className="text-red-500"> *</span>
         </Label>
         <Select value={token} onValueChange={handleTokenChange}>
           <SelectTrigger
@@ -229,7 +226,7 @@ function InvoiceForm({ onCreated }: { onCreated: (id: string) => void }) {
 
       <div className="flex flex-col gap-2">
         <Label htmlFor="network" className="text-slate-900 dark:text-white">
-          Network
+          Network<span className="text-red-500"> *</span>
         </Label>
         {networks.length === 1 ? (
           <Input
@@ -239,7 +236,7 @@ function InvoiceForm({ onCreated }: { onCreated: (id: string) => void }) {
             className="rounded-lg border-slate-300 bg-white dark:border-slate-700 dark:bg-slate-900"
           />
         ) : (
-          <Select value={network} onValueChange={setNetwork} disabled={!token}>
+          <Select value={network} onValueChange={handleNetworkChange} disabled={!token}>
             <SelectTrigger
               id="network"
               className="w-full rounded-lg border-slate-300 bg-white focus:ring-2 focus:ring-blue-600 dark:border-slate-700 dark:bg-slate-900"
@@ -266,7 +263,7 @@ function InvoiceForm({ onCreated }: { onCreated: (id: string) => void }) {
 
       <div className="flex flex-col gap-2">
         <Label htmlFor="amount" className="text-slate-900 dark:text-white">
-          Amount{token ? ` (in ${token})` : ''}
+          Amount{token ? ` (in ${token})` : ''}<span className="text-red-500"> *</span>
         </Label>
         <Input
           id="amount"
@@ -284,15 +281,16 @@ function InvoiceForm({ onCreated }: { onCreated: (id: string) => void }) {
           htmlFor="walletAddress"
           className="text-slate-900 dark:text-white"
         >
-          {network ? `Your ${network} Address` : 'Your Wallet Address'}
+          {network ? `Your ${network} Address` : 'Your Wallet Address'}<span className="text-red-500"> *</span>
         </Label>
         <Input
           id="walletAddress"
           placeholder={
             network
               ? `Enter your ${network} address`
-              : 'Enter your wallet address'
+              : 'Select a network first'
           }
+          disabled={!network}
           value={walletAddress}
           onChange={(e) => handleAddressChange(e.target.value)}
           className="rounded-lg border-slate-300 bg-white focus:ring-2 focus:ring-blue-600 dark:border-slate-700 dark:bg-slate-900"
@@ -382,6 +380,10 @@ function InvoiceForm({ onCreated }: { onCreated: (id: string) => void }) {
           </span>
         </div>
       </div>
+
+      {error && (
+        <p className="text-sm text-red-500">{error}</p>
+      )}
 
       <Button
         type="submit"

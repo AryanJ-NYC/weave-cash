@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { Button } from '@/_components/ui/button';
 import { Input } from '@/_components/ui/input';
@@ -12,39 +12,25 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/_components/ui/select';
-import { TOKENS, getNetworksForToken, type Token, type Network } from '@/lib/invoice/tokens';
-import { validateWalletAddress } from '@/lib/invoice/validation';
+import { TOKENS } from '@/lib/invoice/tokens';
+import { useTokenNetwork } from '@/lib/invoice/use-token-network';
 import type { PaymentQuote } from '@/lib/invoice/payment';
 
 export function SelectCryptoStep({ invoiceId, onQuoteReceived }: SelectCryptoStepProps) {
-  const [token, setToken] = useState<Token | ''>('');
-  const [network, setNetwork] = useState('');
-  const [refundAddress, setRefundAddress] = useState('');
-  const [addressError, setAddressError] = useState('');
+  const {
+    token,
+    network,
+    networks,
+    address: refundAddress,
+    addressError,
+    handleTokenChange,
+    handleNetworkChange,
+    handleAddressChange,
+  } = useTokenNetwork();
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
-  const networks = token ? getNetworksForToken(token) : [];
-
-  function handleTokenChange(value: string) {
-    setToken(value as Token);
-    const availableNetworks = getNetworksForToken(value as Token);
-    setNetwork(availableNetworks.length === 1 ? availableNetworks[0]! : '');
-    setAddressError('');
-    setRefundAddress('');
-  }
-
-  function handleAddressChange(value: string) {
-    setRefundAddress(value);
-    if (value && network) {
-      const valid = validateWalletAddress(value, network as Network);
-      setAddressError(valid ? '' : `Invalid wallet address for ${network}`);
-    } else {
-      setAddressError('');
-    }
-  }
-
-  const handleGetQuote = useCallback(async () => {
+  async function handleGetQuote() {
     if (!token || !network || !refundAddress) return;
 
     setSubmitting(true);
@@ -62,8 +48,12 @@ export function SelectCryptoStep({ invoiceId, onQuoteReceived }: SelectCryptoSte
       });
 
       if (!res.ok) {
-        const data = await res.json();
-        setError(data.error ?? 'Failed to get quote. Please try again.');
+        try {
+          const data = await res.json();
+          setError(data.error ?? 'Failed to get quote. Please try again.');
+        } catch {
+          setError('Something went wrong. Please try again.');
+        }
         return;
       }
 
@@ -74,7 +64,7 @@ export function SelectCryptoStep({ invoiceId, onQuoteReceived }: SelectCryptoSte
     } finally {
       setSubmitting(false);
     }
-  }, [token, network, refundAddress, invoiceId, onQuoteReceived]);
+  }
 
   const isValid =
     token !== '' &&
@@ -86,7 +76,7 @@ export function SelectCryptoStep({ invoiceId, onQuoteReceived }: SelectCryptoSte
     <div className="flex flex-col gap-5">
       <div className="flex flex-col gap-2">
         <Label htmlFor="payToken" className="text-slate-900 dark:text-white">
-          Pay with Token
+          Pay with Token<span className="text-red-500"> *</span>
         </Label>
         <Select value={token} onValueChange={handleTokenChange}>
           <SelectTrigger
@@ -111,7 +101,7 @@ export function SelectCryptoStep({ invoiceId, onQuoteReceived }: SelectCryptoSte
 
       <div className="flex flex-col gap-2">
         <Label htmlFor="payNetwork" className="text-slate-900 dark:text-white">
-          Network
+          Network<span className="text-red-500"> *</span>
         </Label>
         {networks.length === 1 ? (
           <Input
@@ -121,7 +111,7 @@ export function SelectCryptoStep({ invoiceId, onQuoteReceived }: SelectCryptoSte
             className="rounded-lg border-slate-300 bg-white dark:border-slate-700 dark:bg-slate-900"
           />
         ) : (
-          <Select value={network} onValueChange={setNetwork} disabled={!token}>
+          <Select value={network} onValueChange={handleNetworkChange} disabled={!token}>
             <SelectTrigger
               id="payNetwork"
               className="w-full rounded-lg border-slate-300 bg-white focus:ring-2 focus:ring-blue-600 dark:border-slate-700 dark:bg-slate-900"
@@ -147,7 +137,7 @@ export function SelectCryptoStep({ invoiceId, onQuoteReceived }: SelectCryptoSte
 
       <div className="flex flex-col gap-2">
         <Label htmlFor="refundAddress" className="text-slate-900 dark:text-white">
-          {network ? `Your ${network} Refund Address` : 'Your Refund Address'}
+          {network ? `Your ${network} Refund Address` : 'Your Refund Address'}<span className="text-red-500"> *</span>
         </Label>
         <p className="text-pretty text-xs text-slate-500 dark:text-slate-400">
           If the swap fails or cannot be completed, your funds will be returned
@@ -158,8 +148,9 @@ export function SelectCryptoStep({ invoiceId, onQuoteReceived }: SelectCryptoSte
           placeholder={
             network
               ? `Enter your ${network} address for refunds`
-              : 'Enter your wallet address for refunds'
+              : 'Select a network first'
           }
+          disabled={!network}
           value={refundAddress}
           onChange={(e) => handleAddressChange(e.target.value)}
           className="rounded-lg border-slate-300 bg-white focus:ring-2 focus:ring-blue-600 dark:border-slate-700 dark:bg-slate-900"
