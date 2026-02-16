@@ -7,11 +7,11 @@ import {
   useQuery,
 } from '@tanstack/react-query';
 import { intervalToDuration } from 'date-fns';
+import { useParams } from 'next/navigation';
 import { QRCodeSVG } from 'qrcode.react';
 import { isTerminalStatus, type TerminalInfo } from '@/lib/invoice/status';
 import {
   isDepositDetectedSdk,
-  type PaymentQuote,
   type InvoiceStatusResponse,
 } from '@/lib/invoice/payment';
 
@@ -26,80 +26,29 @@ export function DepositStep(props: DepositStepProps) {
 }
 
 function DepositContent({
-  invoiceId,
-  depositAddress,
-  depositMemo,
-  amountIn: serverAmountIn,
-  payToken: serverPayToken,
-  expiresAt: serverExpiresAt,
-  initialSdkStatus,
-  quote,
+  initialData,
   onTerminal,
   onStatusChange,
 }: DepositStepProps) {
-  const isExpiredRef = useRef(false);
-
-  const { data } = useQuery({
-    queryKey: ['invoice-status', invoiceId],
-    queryFn: async (): Promise<InvoiceStatusResponse> => {
-      const res = await fetch(`/api/invoices/${invoiceId}/status`);
-      if (!res.ok) throw new Error('Failed to fetch status');
-      return res.json();
-    },
-    initialData: {
-      status: 'AWAITING_DEPOSIT',
-      sdkStatus: initialSdkStatus,
-      depositAddress: quote?.depositAddress ?? depositAddress,
-      depositMemo: quote?.depositMemo ?? depositMemo ?? null,
-      paidAt: null,
-      amountIn: quote?.amountIn ?? serverAmountIn,
-      payToken: quote?.payToken ?? serverPayToken,
-      expiresAt: quote?.expiresAt ?? serverExpiresAt,
-    },
-    refetchInterval: (query) => {
-      if (query.state.data && isTerminalStatus(query.state.data.status))
-        return false;
-      if (isExpiredRef.current) return false;
-      return POLL_INTERVAL_MS;
-    },
+  const { data, isDetected, countdown } = useInvoiceStatus({
+    initialData,
+    onStatusChange,
+    onTerminal,
   });
 
-  useEffect(() => {
-    if (data) {
-      onStatusChange(data.status, data.sdkStatus);
-    }
-  }, [data, onStatusChange]);
-
-  useEffect(() => {
-    if (data && isTerminalStatus(data.status)) {
-      onTerminal({ status: data.status, paidAt: data.paidAt ?? null });
-    }
-  }, [data, onTerminal]);
-
-  const { formatted, isExpired } = useCountdown(
-    data?.expiresAt ?? quote?.expiresAt ?? null
-  );
-  isExpiredRef.current = isExpired;
-
-  useEffect(() => {
-    if (isExpired) onTerminal({ status: 'EXPIRED', paidAt: null });
-  }, [isExpired, onTerminal]);
-
-  const detected = isDepositDetectedSdk(data?.sdkStatus);
-
-  if (detected) {
+  if (isDetected) {
     return <DetectedView />;
   }
 
-  const address = quote?.depositAddress ?? depositAddress;
-  const memo = quote?.depositMemo ?? depositMemo;
+  const address = data.depositAddress;
+  const memo = data.depositMemo;
   const payInfo =
-    (data?.amountIn && data?.payToken
+    data.amountIn && data.payToken
       ? { amountIn: data.amountIn, payToken: data.payToken }
-      : null) ?? quote;
+      : null;
 
   const statusText =
-    data?.status === 'PROCESSING'
+    data.status === 'PROCESSING'
       ? 'Processing swap...'
       : 'Waiting for deposit...';
 
@@ -146,11 +95,11 @@ function DepositContent({
             {statusText}
           </span>
         </div>
-        {formatted && (
+        {countdown && (
           <p className="text-sm text-slate-500 dark:text-slate-400">
             Quote expires in{' '}
             <span className="font-mono font-medium text-slate-700 dark:text-slate-300">
-              {formatted}
+              {countdown}
             </span>
           </p>
         )}
@@ -185,8 +134,8 @@ function DetectedView() {
           Payment Detected
         </h3>
         <p className="text-center text-sm text-slate-600 dark:text-slate-400">
-          Your payment has been detected and is being processed. You&apos;re
-          all set!
+          Your payment has been detected and is being processed. You&apos;re all
+          set!
         </p>
       </div>
       <div className="flex items-center gap-2">
@@ -235,6 +184,56 @@ function CopyOnClick({ value, children }: CopyOnClickProps) {
   );
 }
 
+function useInvoiceStatus({
+  initialData,
+  onStatusChange,
+  onTerminal,
+}: UseInvoiceStatusParams) {
+  const { id: invoiceId } = useParams<{ id: string }>();
+  const isExpiredRef = useRef(false);
+
+  const { data } = useQuery({
+    queryKey: ['invoice-status', invoiceId],
+    queryFn: async (): Promise<InvoiceStatusResponse> => {
+      const res = await fetch(`/api/invoices/${invoiceId}/status`);
+      if (!res.ok) throw new Error('Failed to fetch status');
+      return res.json();
+    },
+    initialData,
+    refetchInterval: (query) => {
+      if (query.state.data && isTerminalStatus(query.state.data.status))
+        return false;
+      if (isExpiredRef.current) return false;
+      return POLL_INTERVAL_MS;
+    },
+  });
+
+  useEffect(() => {
+    if (data) {
+      onStatusChange(data.status, data.sdkStatus);
+    }
+  }, [data, onStatusChange]);
+
+  useEffect(() => {
+    if (data && isTerminalStatus(data.status)) {
+      onTerminal({ status: data.status, paidAt: data.paidAt ?? null });
+    }
+  }, [data, onTerminal]);
+
+  const { formatted, isExpired } = useCountdown(data?.expiresAt ?? null);
+  isExpiredRef.current = isExpired;
+
+  useEffect(() => {
+    if (isExpired) onTerminal({ status: 'EXPIRED', paidAt: null });
+  }, [isExpired, onTerminal]);
+
+  return {
+    countdown: formatted,
+    data,
+    isDetected: isDepositDetectedSdk(data?.sdkStatus),
+  };
+}
+
 function useCountdown(expiresAt: string | null) {
   const [remaining, setRemaining] = useState<number | null>(() =>
     getSecondsUntil(expiresAt)
@@ -281,16 +280,15 @@ function formatCountdown(totalSeconds: number): string {
 const POLL_INTERVAL_MS = 10_000;
 
 type DepositStepProps = {
-  invoiceId: string;
-  depositAddress: string | null;
-  depositMemo: string | null;
-  amountIn: string | null;
-  payToken: string | null;
-  expiresAt: string | null;
-  initialSdkStatus: string | null;
-  quote: PaymentQuote | null;
+  initialData: InvoiceStatusResponse;
   onTerminal: (info: TerminalInfo) => void;
   onStatusChange: (appStatus: string, sdkStatus: string | null) => void;
+};
+
+type UseInvoiceStatusParams = {
+  initialData: InvoiceStatusResponse;
+  onStatusChange: (appStatus: string, sdkStatus: string | null) => void;
+  onTerminal: (info: TerminalInfo) => void;
 };
 
 type InfoRowProps = {
@@ -302,4 +300,3 @@ type CopyOnClickProps = {
   value: string;
   children: React.ReactNode;
 };
-

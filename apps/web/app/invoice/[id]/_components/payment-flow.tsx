@@ -2,7 +2,11 @@
 
 import { useState, useCallback } from 'react';
 import { isTerminalStatus, type TerminalInfo } from '@/lib/invoice/status';
-import { isDepositDetectedSdk, type PaymentQuote } from '@/lib/invoice/payment';
+import {
+  isDepositDetectedSdk,
+  type PaymentQuote,
+  type InvoiceStatusResponse,
+} from '@/lib/invoice/payment';
 import { InvoiceSummary } from './invoice-summary';
 import { SelectCryptoStep } from './select-crypto-step';
 import { DepositStep } from './deposit-step';
@@ -47,14 +51,7 @@ export function PaymentFlow(props: PaymentFlowProps) {
         />
       ) : step === 'DEPOSIT' ? (
         <DepositStep
-          invoiceId={props.invoiceId}
-          depositAddress={props.depositAddress}
-          depositMemo={props.depositMemo}
-          amountIn={props.amountIn}
-          payToken={props.payToken}
-          expiresAt={props.expiresAt}
-          initialSdkStatus={props.initialSdkStatus}
-          quote={quote}
+          initialData={buildInitialData(props, quote)}
           onTerminal={handleTerminal}
           onStatusChange={handleStatusChange}
         />
@@ -83,6 +80,22 @@ function getInitialDisplayStatus(
 ): string {
   if (isDepositDetectedSdk(sdkStatus)) return 'DEPOSIT_DETECTED';
   return appStatus;
+}
+
+function buildInitialData(
+  props: PaymentFlowProps,
+  quote: PaymentQuote | null
+): InvoiceStatusResponse {
+  return {
+    status: 'AWAITING_DEPOSIT',
+    sdkStatus: props.initialSdkStatus,
+    depositAddress: quote?.depositAddress ?? props.depositAddress,
+    depositMemo: quote?.depositMemo ?? props.depositMemo ?? null,
+    paidAt: null,
+    amountIn: quote?.amountIn ?? props.amountIn,
+    payToken: quote?.payToken ?? props.payToken,
+    expiresAt: quote?.expiresAt ?? props.expiresAt,
+  };
 }
 
 type Step = 'SELECT_CRYPTO' | 'DEPOSIT' | 'TERMINAL';
