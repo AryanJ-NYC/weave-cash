@@ -18,20 +18,22 @@ export async function GET(
   let currentStatus = invoice.status;
   let paidAt = invoice.paidAt;
   let amountIn: string | null = null;
+  let rawSdkStatus: string | null = null;
 
   if (
     (currentStatus === 'AWAITING_DEPOSIT' || currentStatus === 'PROCESSING') &&
     invoice.depositAddress
   ) {
     try {
-      const sdkStatus = await getSwapStatus(
+      const sdkResponse = await getSwapStatus(
         invoice.depositAddress,
         invoice.depositMemo || undefined
       );
 
-      amountIn = sdkStatus.quoteResponse.quote.amountInFormatted ?? null;
+      rawSdkStatus = sdkResponse.status;
+      amountIn = sdkResponse.quoteResponse.quote.amountInFormatted ?? null;
 
-      const mappedStatus = mapSdkStatusToAppStatus(sdkStatus);
+      const mappedStatus = mapSdkStatusToAppStatus(sdkResponse);
       if (mappedStatus && mappedStatus !== currentStatus) {
         const updateData: UpdateData =
           mappedStatus === 'COMPLETED'
@@ -59,6 +61,7 @@ export async function GET(
 
   return NextResponse.json({
     status: currentStatus,
+    sdkStatus: rawSdkStatus,
     depositAddress: invoice.depositAddress,
     depositMemo: invoice.depositMemo,
     paidAt: paidAt?.toISOString() ?? null,

@@ -9,7 +9,11 @@ import {
 import { intervalToDuration } from 'date-fns';
 import { QRCodeSVG } from 'qrcode.react';
 import { isTerminalStatus, type TerminalInfo } from '@/lib/invoice/status';
-import type { PaymentQuote, InvoiceStatusResponse } from '@/lib/invoice/payment';
+import {
+  isDepositDetectedSdk,
+  type PaymentQuote,
+  type InvoiceStatusResponse,
+} from '@/lib/invoice/payment';
 
 export function DepositStep(props: DepositStepProps) {
   const [queryClient] = useState(() => new QueryClient());
@@ -28,8 +32,10 @@ function DepositContent({
   amountIn: serverAmountIn,
   payToken: serverPayToken,
   expiresAt: serverExpiresAt,
+  initialSdkStatus,
   quote,
   onTerminal,
+  onStatusChange,
 }: DepositStepProps) {
   const isExpiredRef = useRef(false);
 
@@ -42,6 +48,7 @@ function DepositContent({
     },
     initialData: {
       status: 'AWAITING_DEPOSIT',
+      sdkStatus: initialSdkStatus,
       depositAddress: quote?.depositAddress ?? depositAddress,
       depositMemo: quote?.depositMemo ?? depositMemo ?? null,
       paidAt: null,
@@ -58,6 +65,12 @@ function DepositContent({
   });
 
   useEffect(() => {
+    if (data) {
+      onStatusChange(data.status, data.sdkStatus);
+    }
+  }, [data, onStatusChange]);
+
+  useEffect(() => {
     if (data && isTerminalStatus(data.status)) {
       onTerminal({ status: data.status, paidAt: data.paidAt ?? null });
     }
@@ -71,6 +84,12 @@ function DepositContent({
   useEffect(() => {
     if (isExpired) onTerminal({ status: 'EXPIRED', paidAt: null });
   }, [isExpired, onTerminal]);
+
+  const detected = isDepositDetectedSdk(data?.sdkStatus);
+
+  if (detected) {
+    return <DetectedView />;
+  }
 
   const address = quote?.depositAddress ?? depositAddress;
   const memo = quote?.depositMemo ?? depositMemo;
@@ -138,6 +157,43 @@ function DepositContent({
         <p className="text-center text-xs text-slate-500 dark:text-slate-400">
           This page will update automatically when your payment is detected.
         </p>
+      </div>
+    </div>
+  );
+}
+
+function DetectedView() {
+  return (
+    <div className="flex flex-col items-center gap-4 py-8">
+      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
+        <svg
+          className="h-8 w-8 text-green-600 dark:text-green-400"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={2}
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M5 13l4 4L19 7"
+          />
+        </svg>
+      </div>
+      <div className="flex flex-col items-center gap-2">
+        <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+          Payment Detected
+        </h3>
+        <p className="text-center text-sm text-slate-600 dark:text-slate-400">
+          Your payment has been detected and is being processed. You&apos;re
+          all set!
+        </p>
+      </div>
+      <div className="flex items-center gap-2">
+        <span className="h-2 w-2 animate-pulse rounded-full bg-green-500" />
+        <span className="text-xs text-slate-500 dark:text-slate-400">
+          Finalizing in the background...
+        </span>
       </div>
     </div>
   );
@@ -231,8 +287,10 @@ type DepositStepProps = {
   amountIn: string | null;
   payToken: string | null;
   expiresAt: string | null;
+  initialSdkStatus: string | null;
   quote: PaymentQuote | null;
   onTerminal: (info: TerminalInfo) => void;
+  onStatusChange: (appStatus: string, sdkStatus: string | null) => void;
 };
 
 type InfoRowProps = {
