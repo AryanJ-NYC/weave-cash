@@ -1,58 +1,155 @@
-# Turborepo Tailwind CSS starter
+# Weave Cash
 
-This Turborepo starter is maintained by the Turborepo core team.
+Accept crypto payments in the token you want. Your customer pays with what they have.
 
-## Using this example
+Weave Cash is an open-source crypto-to-crypto payments platform. Merchants create an invoice with a target settlement token/network, customers choose how they want to pay, and swap/execution happens through NEAR intents.
 
-Run the following command:
+## Important Scope
 
-```sh
-npx create-turbo@latest -e with-tailwind
+- Crypto-to-crypto only
+- No fiat support (USD, EUR, etc.) unless explicitly introduced in future roadmap work
+
+## What Exists Today
+
+- Landing and product pages (`/`, `/about`, `/blogs/web3-payments`)
+- Invoice creation flow (`/create`)
+- Invoice payment flow (`/invoice/[id]`) with status updates
+- Invoice API route (`/api/invoices`)
+- Prisma-backed `Invoice` model in PostgreSQL
+
+## Tech Stack
+
+- Next.js 16 (App Router) + React 19
+- Tailwind CSS 4 + shadcn/ui
+- Prisma ORM + PostgreSQL 16
+- Turborepo + pnpm workspaces
+- Zod validation + `@t3-oss/env-nextjs`
+
+## Repository Layout
+
+```text
+weave-cash/
+├── apps/
+│   └── web/                  # Next.js app (UI + API routes)
+├── packages/
+│   ├── database/             # Prisma schema + DB client
+│   ├── eslint-config/        # Shared ESLint config
+│   └── typescript-config/    # Shared TS config
+└── docs/                     # Product, styling, and troubleshooting docs
 ```
 
-## What's inside?
+## Getting Started
 
-This Turborepo includes the following packages/apps:
+### Prerequisites
 
-### Apps and Packages
+- Node.js 18+
+- pnpm 9+
+- Docker (for local PostgreSQL)
+- Defuse/NEAR 1-Click JWT token
 
-- `docs`: a [Next.js](https://nextjs.org/) app with [Tailwind CSS](https://tailwindcss.com/)
-- `web`: another [Next.js](https://nextjs.org/) app with [Tailwind CSS](https://tailwindcss.com/)
-- `ui`: a stub React component library with [Tailwind CSS](https://tailwindcss.com/) shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+### 1. Install dependencies
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Building packages/ui
-
-This example is set up to produce compiled styles for `ui` components into the `dist` directory. The component `.tsx` files are consumed by the Next.js apps directly using `transpilePackages` in `next.config.ts`. This was chosen for several reasons:
-
-- Make sharing one `tailwind.config.ts` to apps and packages as easy as possible.
-- Make package compilation simple by only depending on the Next.js Compiler and `tailwindcss`.
-- Ensure Tailwind classes do not overwrite each other. The `ui` package uses a `ui-` prefix for it's classes.
-- Maintain clear package export boundaries.
-
-Another option is to consume `packages/ui` directly from source without building. If using this option, you will need to update the `tailwind.config.ts` in your apps to be aware of your package locations, so it can find all usages of the `tailwindcss` class names for CSS compilation.
-
-For example, in [tailwind.config.ts](packages/tailwind-config/tailwind.config.ts):
-
-```js
-  content: [
-    // app content
-    `src/**/*.{js,ts,jsx,tsx}`,
-    // include packages if not transpiling
-    "../../packages/ui/*.{js,ts,jsx,tsx}",
-  ],
+```bash
+pnpm install
 ```
 
-If you choose this strategy, you can remove the `tailwindcss` and `autoprefixer` dependencies from the `ui` package.
+### 2. Configure environment variables
 
-### Utilities
+Create app env file:
 
-This Turborepo has some additional tools already setup for you:
+```bash
+cp apps/web/.env.example apps/web/.env
+```
 
-- [Tailwind CSS](https://tailwindcss.com/) for styles
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+Set values in `apps/web/.env`:
+
+```env
+DATABASE_URL="postgresql://weave:weave@localhost:5432/weave_cash"
+DEFUSE_JWT_TOKEN="<your-defuse-jwt-token>"
+```
+
+Also create Prisma env file (Prisma resolves env relative to `schema.prisma`):
+
+```bash
+cat > packages/database/prisma/.env <<'ENV'
+DATABASE_URL="postgresql://weave:weave@localhost:5432/weave_cash"
+ENV
+```
+
+### 3. Start PostgreSQL
+
+```bash
+docker-compose up -d
+```
+
+### 4. Prepare database
+
+```bash
+cd packages/database
+pnpm db:generate
+pnpm db:migrate
+cd ../..
+```
+
+### 5. Start development
+
+```bash
+pnpm dev
+```
+
+Open [http://localhost:3000](http://localhost:3000).
+
+## Common Commands
+
+From repository root:
+
+```bash
+pnpm dev
+pnpm build
+pnpm lint
+pnpm check-types
+pnpm format
+```
+
+From `packages/database`:
+
+```bash
+pnpm db:generate
+pnpm db:migrate
+pnpm db:push
+pnpm db:studio
+```
+
+## Good To Know Before Contributing
+
+- Use `type` aliases over `interface`
+- Keep shared domain types in `apps/web/lib/`
+- Use `_components/` for app-local shared components
+- Do not edit generated shadcn base components in `apps/web/_components/ui/`; style at call sites
+- Use `import { clsx } from 'clsx'` (not `clsx/lite`)
+
+## Troubleshooting
+
+- Prisma says `Environment variable not found: DATABASE_URL`:
+  - Make sure `packages/database/prisma/.env` exists with `DATABASE_URL`
+- App fails env validation at boot:
+  - Ensure both `DATABASE_URL` and `DEFUSE_JWT_TOKEN` are present in `apps/web/.env`
+
+More detail: see [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md).
+
+## Contributing
+
+Contributions are welcome.
+
+- Open an issue for bugs, ideas, or roadmap discussion
+- Submit focused pull requests with clear descriptions
+- Run `pnpm lint` and `pnpm check-types` before opening a PR
+- For UI changes, include screenshots or short recordings when possible
+
+## Security
+
+Do not commit secrets (`.env`, JWTs, private keys, credential-bearing URLs). Redact sensitive values in logs and issue reports.
+
+## License
+
+This project is licensed under the GNU Affero General Public License v3.0 (AGPL-3.0). See `/Users/aryanjabbari/Documents/projects/weave-cash/LICENSE`.
