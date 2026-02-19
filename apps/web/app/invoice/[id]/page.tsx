@@ -1,5 +1,4 @@
 import { notFound } from 'next/navigation';
-import { prisma } from '@repo/database';
 import {
   Card,
   CardAction,
@@ -8,8 +7,9 @@ import {
   CardHeader,
   CardTitle,
 } from '@/_components/ui/card';
-import { getSwapStatus } from '@/lib/near-intents/status';
+import { getInvoiceById } from '@/lib/invoice/get-invoice-by-id';
 import { CopyLinkButton } from './_components/copy-link-button';
+import { InvoiceQueryProvider } from './_components/invoice-query-provider';
 import { PaymentFlow } from './_components/payment-flow';
 
 export default async function InvoicePaymentPage({
@@ -18,25 +18,10 @@ export default async function InvoicePaymentPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const invoice = await prisma.invoice.findUnique({ where: { id } });
+  const invoice = await getInvoiceById(id);
 
   if (!invoice) {
     notFound();
-  }
-
-  let amountIn: string | null = null;
-  let initialSdkStatus: string | null = null;
-  if (invoice.depositAddress) {
-    try {
-      const sdkResponse = await getSwapStatus(
-        invoice.depositAddress,
-        invoice.depositMemo ?? undefined,
-      );
-      amountIn = sdkResponse.quoteResponse.quote.amountInFormatted;
-      initialSdkStatus = sdkResponse.status;
-    } catch {
-      // SDK call failed; amountIn and sdkStatus will load on first poll
-    }
   }
 
   return (
@@ -54,26 +39,9 @@ export default async function InvoicePaymentPage({
           </CardAction>
         </CardHeader>
         <CardContent className="flex flex-col gap-6">
-          <PaymentFlow
-            invoiceId={invoice.id}
-            status={invoice.status}
-            initialSdkStatus={initialSdkStatus}
-            depositAddress={invoice.depositAddress}
-            depositMemo={invoice.depositMemo}
-            paidAt={invoice.paidAt?.toISOString() ?? null}
-            amountIn={amountIn}
-            payToken={invoice.payToken ?? null}
-            expiresAt={invoice.expiresAt?.toISOString() ?? null}
-            summary={{
-              amount: invoice.amount,
-              receiveToken: invoice.receiveToken,
-              receiveNetwork: invoice.receiveNetwork,
-              description: invoice.description,
-              buyerName: invoice.buyerName,
-              buyerEmail: invoice.buyerEmail,
-              buyerAddress: invoice.buyerAddress,
-            }}
-          />
+          <InvoiceQueryProvider>
+            <PaymentFlow invoiceId={invoice.id} initialInvoice={invoice} />
+          </InvoiceQueryProvider>
         </CardContent>
       </Card>
     </div>
