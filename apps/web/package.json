@@ -10,7 +10,8 @@
     "lint": "eslint --max-warnings 0",
     "check-types": "next typegen && tsc --noEmit",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "react-doctor": "npx -y react-doctor@latest . --yes --no-ami"
   },
   "dependencies": {
     "@defuse-protocol/one-click-sdk-typescript": "^0.1.15",
