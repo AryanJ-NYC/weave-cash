@@ -33,6 +33,14 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Run React Doctor
+        uses: millionco/react-doctor@0.0.1
+        continue-on-error: true
+        with:
+          directory: ./apps/web
+          node-version: "24"
+          verbose: "true"
+
       - name: Generate Prisma client
         run: pnpm --filter @repo/database db:generate
 
