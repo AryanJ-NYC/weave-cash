@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { Button } from '@/_components/ui/button';
 import { Input } from '@/_components/ui/input';
@@ -14,9 +13,12 @@ import {
 } from '@/_components/ui/select';
 import { TOKENS } from '@/lib/invoice/tokens';
 import { useTokenNetwork } from '@/lib/invoice/use-token-network';
-import type { PaymentQuote } from '@/lib/invoice/payment';
 
-export function SelectCryptoStep({ invoiceId, onQuoteReceived }: SelectCryptoStepProps) {
+export function SelectCryptoStep({
+  onRequestQuote,
+  submitting,
+  error,
+}: SelectCryptoStepProps) {
   const {
     token,
     network,
@@ -27,42 +29,18 @@ export function SelectCryptoStep({ invoiceId, onQuoteReceived }: SelectCryptoSte
     handleNetworkChange,
     handleAddressChange,
   } = useTokenNetwork();
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState('');
 
   async function handleGetQuote() {
-    if (!token || !network || !refundAddress) return;
-
-    setSubmitting(true);
-    setError('');
+    if (!token || !network || !refundAddress || submitting) return;
 
     try {
-      const res = await fetch(`/api/invoices/${invoiceId}/quote`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          payToken: token,
-          payNetwork: network,
-          refundAddress,
-        }),
+      await onRequestQuote({
+        payToken: token,
+        payNetwork: network,
+        refundAddress,
       });
-
-      if (!res.ok) {
-        try {
-          const data = await res.json();
-          setError(data.error ?? 'Failed to get quote. Please try again.');
-        } catch {
-          setError('Something went wrong. Please try again.');
-        }
-        return;
-      }
-
-      const data = await res.json();
-      onQuoteReceived({ ...data, payToken: token });
     } catch {
-      setError('Network error. Please try again.');
-    } finally {
-      setSubmitting(false);
+      // Error state is already propagated through the parent hook.
     }
   }
 
@@ -111,7 +89,11 @@ export function SelectCryptoStep({ invoiceId, onQuoteReceived }: SelectCryptoSte
             className="rounded-lg border-slate-300 bg-white dark:border-slate-700 dark:bg-slate-900"
           />
         ) : (
-          <Select value={network} onValueChange={handleNetworkChange} disabled={!token}>
+          <Select
+            value={network}
+            onValueChange={handleNetworkChange}
+            disabled={!token}
+          >
             <SelectTrigger
               id="payNetwork"
               className="w-full rounded-lg border-slate-300 bg-white focus:ring-2 focus:ring-blue-600 dark:border-slate-700 dark:bg-slate-900"
@@ -136,8 +118,12 @@ export function SelectCryptoStep({ invoiceId, onQuoteReceived }: SelectCryptoSte
       </div>
 
       <div className="flex flex-col gap-2">
-        <Label htmlFor="refundAddress" className="text-slate-900 dark:text-white">
-          {network ? `Your ${network} Refund Address` : 'Your Refund Address'}<span className="text-red-500"> *</span>
+        <Label
+          htmlFor="refundAddress"
+          className="text-slate-900 dark:text-white"
+        >
+          {network ? `Your ${network} Refund Address` : 'Your Refund Address'}
+          <span className="text-red-500"> *</span>
         </Label>
         <p className="text-pretty text-xs text-slate-500 dark:text-slate-400">
           If the swap fails or cannot be completed, your funds will be returned
@@ -158,14 +144,12 @@ export function SelectCryptoStep({ invoiceId, onQuoteReceived }: SelectCryptoSte
         {addressError && <p className="text-sm text-red-500">{addressError}</p>}
       </div>
 
-      {error && (
-        <p className="text-sm text-red-500">{error}</p>
-      )}
+      {error && <p className="text-sm text-red-500">{error}</p>}
 
       <Button
         onClick={handleGetQuote}
         disabled={!isValid || submitting}
-        className="w-full rounded-lg bg-blue-600 text-white shadow-lg shadow-blue-600/25 hover:bg-blue-700 hover:shadow-xl hover:shadow-blue-600/30 dark:bg-blue-500 dark:shadow-blue-500/25 dark:hover:bg-blue-600"
+        className="w-full rounded-lg bg-blue-600 px-6 py-3 text-white shadow-lg shadow-blue-600/25 hover:bg-blue-700 hover:shadow-xl hover:shadow-blue-600/30 dark:bg-blue-500 dark:shadow-blue-500/25 dark:hover:bg-blue-600"
       >
         {submitting ? (
           <>
@@ -181,6 +165,11 @@ export function SelectCryptoStep({ invoiceId, onQuoteReceived }: SelectCryptoSte
 }
 
 type SelectCryptoStepProps = {
-  invoiceId: string;
-  onQuoteReceived: (quote: PaymentQuote) => void;
+  submitting: boolean;
+  error: string | null;
+  onRequestQuote: (input: {
+    payToken: string;
+    payNetwork: string;
+    refundAddress: string;
+  }) => Promise<void>;
 };
