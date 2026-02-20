@@ -52,6 +52,7 @@ describe('GET /api/invoices/[id]', () => {
       depositMemo: null,
       expiresAt: null,
       paidAt: null,
+      quotedAt: null,
       createdAt,
       updatedAt,
     };
@@ -120,8 +121,9 @@ describe('GET /api/invoices/[id]', () => {
       depositMemo: 'memo',
       expiresAt: null,
       paidAt: null,
+      quotedAt: new Date('2026-02-18T10:01:00.000Z'),
       createdAt: new Date('2026-02-18T10:00:00.000Z'),
-      updatedAt: new Date('2026-02-18T10:01:00.000Z'),
+      updatedAt: new Date('2026-02-18T10:03:00.000Z'),
     };
     findUnique.mockResolvedValueOnce(invoice);
     getSwapStatus.mockResolvedValueOnce({
@@ -131,7 +133,7 @@ describe('GET /api/invoices/[id]', () => {
     update.mockResolvedValueOnce({
       ...invoice,
       status: 'PROCESSING',
-      updatedAt: new Date('2026-02-18T10:02:00.000Z'),
+      updatedAt: new Date('2026-02-18T10:04:00.000Z'),
     });
 
     const response = await GET(new Request('http://localhost'), {
@@ -146,6 +148,9 @@ describe('GET /api/invoices/[id]', () => {
     });
     expect(json.status).toBe('PROCESSING');
     expect(json.timeline.currentStatus).toBe('PROCESSING');
+    expect(json.timeline.quotedAt).toBe(
+      new Date('2026-02-18T10:01:00.000Z').toISOString()
+    );
     expect(json.paymentInstructions.amountIn).toBe('42.0');
   });
 
@@ -167,6 +172,7 @@ describe('GET /api/invoices/[id]', () => {
       depositMemo: null,
       expiresAt: null,
       paidAt: null,
+      quotedAt: new Date('2026-02-18T10:01:00.000Z'),
       createdAt: new Date('2026-02-18T10:00:00.000Z'),
       updatedAt: new Date('2026-02-18T10:01:00.000Z'),
     };
@@ -222,6 +228,7 @@ describe('GET /api/invoices/[id]', () => {
       depositMemo: null,
       expiresAt: null,
       paidAt: null,
+      quotedAt: new Date('2026-02-18T10:01:00.000Z'),
       createdAt: new Date('2026-02-18T10:00:00.000Z'),
       updatedAt: new Date('2026-02-18T10:01:00.000Z'),
     };

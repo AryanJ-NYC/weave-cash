@@ -33,11 +33,15 @@ export function SelectCryptoStep({
   async function handleGetQuote() {
     if (!token || !network || !refundAddress || submitting) return;
 
-    await onRequestQuote({
-      payToken: token,
-      payNetwork: network,
-      refundAddress,
-    });
+    try {
+      await onRequestQuote({
+        payToken: token,
+        payNetwork: network,
+        refundAddress,
+      });
+    } catch {
+      // Error state is already propagated through the parent hook.
+    }
   }
 
   const isValid =

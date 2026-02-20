@@ -33,6 +33,7 @@ model Invoice {
   depositAddress String?
   depositMemo    String?
   expiresAt      DateTime?
+  quotedAt       DateTime?
   paidAt         DateTime?
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt

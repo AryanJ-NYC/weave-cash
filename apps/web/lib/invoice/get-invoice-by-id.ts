@@ -94,7 +94,7 @@ function serializeInvoice(
   const updatedAt = invoice.updatedAt.toISOString();
   const expiresAt = invoice.expiresAt?.toISOString() ?? null;
   const paidAt = invoice.paidAt?.toISOString() ?? null;
-  const quotedAt = invoice.depositAddress ? updatedAt : null;
+  const quotedAt = getQuotedAt(invoice, updatedAt);
 
   const timeline: InvoiceTimeline = {
     currentStatus: invoice.status,
@@ -141,6 +141,25 @@ function serializeInvoice(
   };
 }
 
+function getQuotedAt(invoice: Invoice, updatedAt: string): string | null {
+  if (invoice.quotedAt) {
+    return invoice.quotedAt.toISOString();
+  }
+
+  if (!invoice.depositAddress) {
+    return null;
+  }
+
+  // Backwards compatibility for rows written before quotedAt was persisted.
+  if (invoice.expiresAt) {
+    return new Date(
+      invoice.expiresAt.getTime() - LEGACY_QUOTE_WINDOW_MS
+    ).toISOString();
+  }
+
+  return updatedAt;
+}
+
 type AppStatus =
   | 'AWAITING_DEPOSIT'
   | 'PROCESSING'
@@ -154,3 +173,5 @@ type UpdateData = {
   status: AppStatus;
   paidAt?: Date;
 };
+
+const LEGACY_QUOTE_WINDOW_MS = 30 * 60 * 1000;

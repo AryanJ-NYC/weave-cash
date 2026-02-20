@@ -87,6 +87,7 @@ export async function POST(
       depositMemo: quote.depositMemo,
       status: 'AWAITING_DEPOSIT',
       expiresAt: quote.deadline,
+      quotedAt: new Date(),
     },
   });
 
@@ -136,4 +137,3 @@ const quoteRequestSchema = z
       });
     }
   });
-
