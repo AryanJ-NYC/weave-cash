@@ -13,6 +13,9 @@ concurrency:
 jobs:
   web-quality:
     runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/weave_cash?schema=public
+      DEFUSE_JWT_TOKEN: ci-dummy-token
 
     steps:
       - name: Checkout repository
@@ -29,6 +32,9 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma client
+        run: pnpm --filter @repo/database db:generate
 
       - name: Run web tests
         run: pnpm --filter web test
