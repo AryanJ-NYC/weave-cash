@@ -76,4 +76,6 @@ const NETWORK_TO_BLOCKCHAIN: Record<Network, TokenResponse.blockchain> = {
   Ethereum: TokenResponse.blockchain.ETH,
   Solana: TokenResponse.blockchain.SOL,
   Bitcoin: TokenResponse.blockchain.BTC,
+  Zcash: TokenResponse.blockchain.ZEC,
+  Tron: TokenResponse.blockchain.TRON,
 };
