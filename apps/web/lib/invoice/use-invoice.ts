@@ -57,13 +57,35 @@ export function useInvoice({ invoiceId, initialInvoice }: UseInvoiceParams) {
     },
   });
 
+  const submitDepositTxMutation = useMutation({
+    mutationFn: (txHash: string) =>
+      submitDepositTxHashRequest(invoiceId, txHash),
+    onMutate: () => {
+      dispatch({ type: 'SUBMIT_REQUESTED' });
+    },
+    onSuccess: () => {
+      dispatch({ type: 'SUBMIT_SUCCEEDED' });
+      void queryClient.invalidateQueries({ queryKey: ['invoice', invoiceId] });
+    },
+    onError: (error) => {
+      dispatch({ type: 'SUBMIT_FAILED', message: getSubmitErrorMessage(error) });
+    },
+  });
+
   const trackerView = useMemo(
     () =>
       buildTrackerView(invoiceQuery.data ?? initialInvoice, {
         ...state,
         quotePending: quoteMutation.isPending,
+        submitPending: submitDepositTxMutation.isPending,
       }),
-    [invoiceQuery.data, initialInvoice, state, quoteMutation.isPending]
+    [
+      invoiceQuery.data,
+      initialInvoice,
+      state,
+      quoteMutation.isPending,
+      submitDepositTxMutation.isPending,
+    ]
   );
 
   return {
@@ -71,6 +93,9 @@ export function useInvoice({ invoiceId, initialInvoice }: UseInvoiceParams) {
     refetch: invoiceQuery.refetch,
     requestQuote: async (input: QuoteRequestInput) => {
       await quoteMutation.mutateAsync(input);
+    },
+    submitDepositTxHash: async (txHash: string) => {
+      await submitDepositTxMutation.mutateAsync(txHash);
     },
     onCountdownExpired: () => {
       dispatch({ type: 'COUNTDOWN_EXPIRED' });
@@ -90,7 +115,9 @@ export function buildInitialInvoiceState(
     optimisticInstructions: null,
     lastKnownAmountIn: invoice.paymentInstructions.amountIn,
     terminalOverrideStatus: null,
+    submitError: null,
     quotePending: false,
+    submitPending: false,
   };
 }
 
@@ -160,6 +187,24 @@ export function invoiceReducer(
         quoteError: action.message,
       };
 
+    case 'SUBMIT_REQUESTED':
+      return {
+        ...state,
+        submitError: null,
+      };
+
+    case 'SUBMIT_SUCCEEDED':
+      return {
+        ...state,
+        submitError: null,
+      };
+
+    case 'SUBMIT_FAILED':
+      return {
+        ...state,
+        submitError: action.message,
+      };
+
     case 'COUNTDOWN_EXPIRED':
       return {
         ...state,
@@ -190,6 +235,8 @@ export function buildTrackerView(
     phase: state.phase,
     quoteError: state.quoteError,
     quotePending: state.quotePending,
+    submitError: state.submitError,
+    submitPending: state.submitPending,
     summary: getInvoiceSummaryData(invoice),
     timeline: invoice.timeline,
     instructions: mergedInstructions,
@@ -254,12 +301,44 @@ async function requestInvoiceQuote(
   };
 }
 
+async function submitDepositTxHashRequest(
+  invoiceId: string,
+  txHash: string
+): Promise<void> {
+  const res = await fetch(`/api/invoices/${invoiceId}/deposit/submit`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ txHash }),
+  });
+
+  if (!res.ok) {
+    let errorMessage = 'Failed to submit transaction hash. Please try again.';
+    try {
+      const data = await res.json();
+      if (typeof data.error === 'string') {
+        errorMessage = data.error;
+      }
+    } catch {
+      // Keep default error message.
+    }
+    throw new Error(errorMessage);
+  }
+}
+
 function getErrorMessage(error: unknown): string {
   if (error instanceof Error && error.message) {
     return error.message;
   }
 
   return 'Failed to get quote. Please try again.';
+}
+
+function getSubmitErrorMessage(error: unknown): string {
+  if (error instanceof Error && error.message) {
+    return error.message;
+  }
+
+  return 'Failed to submit transaction hash. Please try again.';
 }
 
 type UseInvoiceParams = {
@@ -276,10 +355,12 @@ type QuoteRequestInput = {
 type InvoiceState = {
   phase: TrackerPhase;
   quoteError: string | null;
+  submitError: string | null;
   optimisticInstructions: Partial<TrackerInstructions> | null;
   lastKnownAmountIn: string | null;
   terminalOverrideStatus: 'EXPIRED' | null;
   quotePending: boolean;
+  submitPending: boolean;
 };
 
 type TrackerView = {
@@ -288,6 +369,8 @@ type TrackerView = {
   phase: TrackerPhase;
   quoteError: string | null;
   quotePending: boolean;
+  submitError: string | null;
+  submitPending: boolean;
   summary: ReturnType<typeof getInvoiceSummaryData>;
   instructions: TrackerInstructions;
   timeline: InvoiceNormalizedResponse['timeline'];
@@ -298,4 +381,7 @@ type InvoiceAction =
   | { type: 'QUOTE_REQUESTED' }
   | { type: 'QUOTE_SUCCEEDED'; quote: PaymentQuote }
   | { type: 'QUOTE_FAILED'; message: string }
+  | { type: 'SUBMIT_REQUESTED' }
+  | { type: 'SUBMIT_SUCCEEDED' }
+  | { type: 'SUBMIT_FAILED'; message: string }
   | { type: 'COUNTDOWN_EXPIRED' };

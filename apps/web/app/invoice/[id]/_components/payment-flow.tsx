@@ -20,7 +20,10 @@ export function PaymentFlow({ invoiceId, initialInvoice }: PaymentFlowProps) {
     instructions,
     quoteError,
     quotePending,
+    submitError,
+    submitPending,
     requestQuote,
+    submitDepositTxHash,
     onCountdownExpired,
   } = useInvoice({ invoiceId, initialInvoice });
 
@@ -64,6 +67,9 @@ export function PaymentFlow({ invoiceId, initialInvoice }: PaymentFlowProps) {
             <DepositStep
               instructions={instructions}
               status={status}
+              submitPending={submitPending}
+              submitError={submitError}
+              onSubmitDepositTxHash={submitDepositTxHash}
               onCountdownExpired={onCountdownExpired}
             />
           </div>

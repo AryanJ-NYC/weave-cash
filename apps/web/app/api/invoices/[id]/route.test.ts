@@ -154,6 +154,54 @@ describe('GET /api/invoices/[id]', () => {
     expect(json.paymentInstructions.amountIn).toBe('42.0');
   });
 
+  it('updates status to PROCESSING when SDK reports KNOWN_DEPOSIT_TX', async () => {
+    const invoice = {
+      id: 'inv_known_deposit',
+      status: 'AWAITING_DEPOSIT',
+      receiveToken: 'BTC',
+      receiveNetwork: 'Bitcoin',
+      amount: '0.01',
+      walletAddress: 'bc1qmerchant',
+      description: null,
+      buyerName: null,
+      buyerEmail: null,
+      buyerAddress: null,
+      payToken: 'USDC',
+      payNetwork: 'Ethereum',
+      depositAddress: '0xdeposit',
+      depositMemo: 'memo',
+      expiresAt: null,
+      paidAt: null,
+      quotedAt: new Date('2026-02-18T10:01:00.000Z'),
+      createdAt: new Date('2026-02-18T10:00:00.000Z'),
+      updatedAt: new Date('2026-02-18T10:03:00.000Z'),
+    };
+    findUnique.mockResolvedValueOnce(invoice);
+    getSwapStatus.mockResolvedValueOnce({
+      status: 'KNOWN_DEPOSIT_TX',
+      quoteResponse: { quote: { amountInFormatted: '42.0' } },
+    });
+    update.mockResolvedValueOnce({
+      ...invoice,
+      status: 'PROCESSING',
+      updatedAt: new Date('2026-02-18T10:04:00.000Z'),
+    });
+
+    const response = await GET(new Request('http://localhost'), {
+      params: Promise.resolve({ id: invoice.id }),
+    });
+    const json = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(update).toHaveBeenCalledWith({
+      data: { status: 'PROCESSING' },
+      where: { id: invoice.id },
+    });
+    expect(json.status).toBe('PROCESSING');
+    expect(json.timeline.currentStatus).toBe('PROCESSING');
+    expect(json.paymentInstructions.amountIn).toBe('42.0');
+  });
+
   it('sets paidAt when SDK reports SUCCESS', async () => {
     const invoice = {
       id: 'inv_success',

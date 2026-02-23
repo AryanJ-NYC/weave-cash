@@ -17,7 +17,8 @@ export function Footer() {
               />
             </Link>
             <p className="mt-4 text-sm text-slate-600 dark:text-slate-400">
-              Accept any crypto. Receive yours. Powered by NEAR intents.
+              NEAR Intents market makers compete to offer you the tightest
+              spreads. WeaveCash takes zero fees.
             </p>
           </div>
 

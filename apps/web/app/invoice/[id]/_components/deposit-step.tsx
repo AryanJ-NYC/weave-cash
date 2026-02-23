@@ -2,16 +2,25 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { intervalToDuration } from 'date-fns';
+import { Loader2 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
+import { Button } from '@/_components/ui/button';
+import { Input } from '@/_components/ui/input';
+import { Label } from '@/_components/ui/label';
 import type { TrackerInstructions } from '@/lib/invoice/payment';
 
 export function DepositStep({
   instructions,
   status,
+  submitPending,
+  submitError,
+  onSubmitDepositTxHash,
   onCountdownExpired,
 }: DepositStepProps) {
   const { formatted, isExpired } = useCountdown(instructions.expiresAt);
   const hasHandledExpiryRef = useRef(false);
+  const [txHash, setTxHash] = useState('');
+  const [submitSuccess, setSubmitSuccess] = useState<string | null>(null);
 
   useEffect(() => {
     if (isExpired && !hasHandledExpiryRef.current) {
@@ -29,6 +38,21 @@ export function DepositStep({
 
   const statusText =
     status === 'PROCESSING' ? 'Processing swap...' : 'Waiting for deposit...';
+
+  async function handleSubmitTxHash() {
+    const nextTxHash = txHash.trim();
+    if (!nextTxHash || !address || submitPending) return;
+
+    try {
+      await onSubmitDepositTxHash(nextTxHash);
+      setSubmitSuccess(
+        'Transaction hash submitted. We will refresh payment status shortly.'
+      );
+      setTxHash('');
+    } catch {
+      setSubmitSuccess(null);
+    }
+  }
 
   return (
     <div className="flex flex-col gap-4">
@@ -75,6 +99,56 @@ export function DepositStep({
         </div>
       )}
 
+      {address && (
+        <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-800/50">
+          <Label
+            htmlFor="depositTxHash"
+            className="text-sm font-medium text-slate-900 dark:text-white"
+          >
+            Optional: submit transaction hash to speed up confirmation.
+          </Label>
+          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+            After sending funds, paste your network transaction hash so we can
+            notify 1Click sooner.
+          </p>
+
+          <div className="mt-3 flex flex-col gap-3 md:flex-row">
+            <Input
+              id="depositTxHash"
+              value={txHash}
+              onChange={(event) => setTxHash(event.target.value)}
+              placeholder="Paste transaction hash"
+              disabled={submitPending}
+              className="rounded-lg border-slate-300 bg-white focus:ring-2 focus:ring-blue-600 dark:border-slate-700 dark:bg-slate-900"
+            />
+            <Button
+              type="button"
+              onClick={handleSubmitTxHash}
+              disabled={!txHash.trim() || submitPending}
+              className="w-full rounded-lg bg-blue-600 px-5 py-3 text-white shadow-lg shadow-blue-600/25 hover:bg-blue-700 hover:shadow-xl hover:shadow-blue-600/30 disabled:cursor-not-allowed disabled:opacity-60 md:w-auto dark:bg-blue-500 dark:shadow-blue-500/25 dark:hover:bg-blue-600"
+            >
+              {submitPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Submitting...
+                </>
+              ) : (
+                'Submit Hash'
+              )}
+            </Button>
+          </div>
+
+          {submitError && (
+            <p className="mt-2 text-sm text-red-500">{submitError}</p>
+          )}
+          {submitSuccess && !submitError && (
+            <p className="mt-2 text-sm text-green-600 dark:text-green-400">
+              {submitSuccess}
+            </p>
+          )}
+        </div>
+      )}
+
       {formatted && (
         <p className="text-center text-sm text-slate-500 dark:text-slate-400">
           Quote expires in{' '}
@@ -85,7 +159,8 @@ export function DepositStep({
       )}
 
       <p className="text-center text-xs text-slate-500 dark:text-slate-400">
-        This page updates automatically while payment progresses.
+        This page updates automatically while payment progresses. Submitting a
+        transaction hash can speed up updates.
       </p>
     </div>
   );
@@ -173,6 +248,9 @@ function formatCountdown(totalSeconds: number): string {
 type DepositStepProps = {
   instructions: TrackerInstructions;
   status: string;
+  submitPending: boolean;
+  submitError: string | null;
+  onSubmitDepositTxHash: (txHash: string) => Promise<void>;
   onCountdownExpired: () => void;
 };
 

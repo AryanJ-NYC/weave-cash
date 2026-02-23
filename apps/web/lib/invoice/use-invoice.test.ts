@@ -67,17 +67,47 @@ describe('useInvoice reducer and tracker view', () => {
     expect(next.terminalOverrideStatus).toBe('EXPIRED');
   });
 
+  it('stores submit error and clears it when submit is retried', () => {
+    const initial = buildInitialInvoiceState(createInvoice());
+    const failed = invoiceReducer(initial, {
+      type: 'SUBMIT_FAILED',
+      message: 'Invalid transaction hash',
+    });
+    const retried = invoiceReducer(failed, {
+      type: 'SUBMIT_REQUESTED',
+    });
+
+    expect(failed.submitError).toBe('Invalid transaction hash');
+    expect(retried.submitError).toBeNull();
+  });
+
   it('uses lastKnownAmountIn fallback when API amountIn is null', () => {
     const invoice = createInvoice({ amountIn: null });
     const state = {
       ...buildInitialInvoiceState(invoice),
       lastKnownAmountIn: '9.25',
       quotePending: false,
+      submitPending: false,
     };
 
     const view = buildTrackerView(invoice, state);
 
     expect(view.instructions.amountIn).toBe('9.25');
+  });
+
+  it('surfaces submit pending and submit error in tracker view', () => {
+    const invoice = createInvoice();
+    const state = {
+      ...buildInitialInvoiceState(invoice),
+      quotePending: false,
+      submitPending: true,
+      submitError: 'Failed to submit hash',
+    };
+
+    const view = buildTrackerView(invoice, state);
+
+    expect(view.submitPending).toBe(true);
+    expect(view.submitError).toBe('Failed to submit hash');
   });
 });
 

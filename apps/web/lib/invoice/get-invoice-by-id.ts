@@ -70,9 +70,9 @@ function mapSdkStatusToAppStatus(
 ): AppStatus | null {
   switch (sdkStatus.status) {
     case 'PENDING_DEPOSIT':
-    case 'KNOWN_DEPOSIT_TX':
     case 'INCOMPLETE_DEPOSIT':
       return 'AWAITING_DEPOSIT';
+    case 'KNOWN_DEPOSIT_TX':
     case 'PROCESSING':
       return 'PROCESSING';
     case 'SUCCESS':
