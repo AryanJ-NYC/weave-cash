@@ -1,0 +1,42 @@
+name: CLI CI
+
+on:
+  pull_request:
+    paths:
+      - "apps/cli/**"
+      - ".github/workflows/cli-ci.yml"
+  push:
+    branches:
+      - master
+    paths:
+      - "apps/cli/**"
+      - ".github/workflows/cli-ci.yml"
+
+concurrency:
+  group: cli-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  cli-quality:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: apps/cli/go.mod
+
+      - name: Run CLI tests
+        working-directory: apps/cli
+        run: go test ./...
+
+      - name: Run CLI vet
+        working-directory: apps/cli
+        run: go vet ./...
+
+      - name: Build CLI binary
+        working-directory: apps/cli
+        run: go build ./cmd/weave

@@ -1,0 +1,55 @@
+version: 2
+
+project_name: weave
+
+builds:
+  - id: weave
+    dir: apps/cli
+    main: ./cmd/weave
+    binary: weave
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - darwin
+      - linux
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w
+
+archives:
+  - id: weave-archive
+    ids:
+      - weave
+    formats:
+      - tar.gz
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+
+checksum:
+  name_template: checksums.txt
+
+release:
+  github:
+    owner: AryanJ-NYC
+    name: weave-cash
+  make_latest: true
+
+brews:
+  - name: weave
+    ids:
+      - weave
+    homepage: https://github.com/AryanJ-NYC/weave-cash
+    description: Agent-first CLI for Weave Cash invoice and quote flows
+    license: MIT
+    repository:
+      owner: AryanJ-NYC
+      name: homebrew-tap
+      branch: master
+      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
+    directory: Formula
+    commit_author:
+      name: weave-bot
+      email: 8263430+AryanJ-NYC@users.noreply.github.com
+    test: |
+      system "#{bin}/weave", "--help"

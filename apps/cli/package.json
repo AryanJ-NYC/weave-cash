@@ -1,0 +1,11 @@
+{
+  "name": "cli",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "mkdir -p dist .cache/go-build .cache/go-mod && GOCACHE=\"$(pwd)/.cache/go-build\" GOMODCACHE=\"$(pwd)/.cache/go-mod\" go build -o dist/weave ./cmd/weave",
+    "test": "mkdir -p .cache/go-build .cache/go-mod && GOCACHE=\"$(pwd)/.cache/go-build\" GOMODCACHE=\"$(pwd)/.cache/go-mod\" go test ./...",
+    "lint": "mkdir -p .cache/go-build .cache/go-mod && GOCACHE=\"$(pwd)/.cache/go-build\" GOMODCACHE=\"$(pwd)/.cache/go-mod\" go vet ./...",
+    "check-types": "mkdir -p .cache/go-build .cache/go-mod && GOCACHE=\"$(pwd)/.cache/go-build\" GOMODCACHE=\"$(pwd)/.cache/go-mod\" go build ./..."
+  }
+}
