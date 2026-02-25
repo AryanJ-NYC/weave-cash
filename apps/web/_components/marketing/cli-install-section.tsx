@@ -6,8 +6,8 @@ export function CLIInstallSection() {
     <section className="relative overflow-hidden bg-slate-950 py-24 md:py-32">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(59,130,246,0.22),transparent_45%),radial-gradient(circle_at_bottom_left,rgba(56,189,248,0.16),transparent_40%)]" />
 
-      <div className="relative mx-auto grid max-w-7xl gap-10 px-4 md:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
-        <div>
+      <div className="relative mx-auto grid max-w-[88rem] gap-12 px-4 md:px-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:items-start">
+        <div className="min-w-0 lg:pr-4">
           <p className="inline-flex items-center rounded-full border border-blue-300/20 bg-blue-400/10 px-4 py-1.5 text-sm font-semibold tracking-wide text-blue-200">
             Agent-First CLI Install
           </p>
@@ -58,8 +58,8 @@ export function CLIInstallSection() {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-5 shadow-2xl shadow-black/30">
-          <div className="mb-4 flex items-center justify-between border-b border-slate-800 pb-4">
+        <div className="min-w-0 overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/80 p-5 shadow-2xl shadow-black/30">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-4">
             <p className="text-sm font-semibold text-slate-200">Quick Install</p>
             <div className="flex items-center gap-2">
               <p className="text-xs font-medium uppercase tracking-wider text-slate-400">
@@ -69,7 +69,7 @@ export function CLIInstallSection() {
             </div>
           </div>
 
-          <pre className="overflow-x-auto rounded-xl border border-slate-800 bg-slate-950 p-4 text-sm leading-relaxed text-cyan-200">
+          <pre className="w-full max-w-full overflow-x-auto rounded-xl border border-slate-800 bg-slate-950 p-4 text-sm leading-relaxed text-cyan-200 whitespace-pre">
             <code>{INSTALL_COMMAND}</code>
           </pre>
 
@@ -77,7 +77,7 @@ export function CLIInstallSection() {
             Prefer to inspect before running?
           </p>
 
-          <pre className="mt-2 overflow-x-auto rounded-xl border border-slate-800 bg-slate-950 p-4 text-xs leading-relaxed text-slate-200">
+          <pre className="mt-2 w-full max-w-full overflow-x-hidden rounded-xl border border-slate-800 bg-slate-950 p-4 text-xs leading-relaxed text-slate-200 whitespace-pre-wrap break-words">
             <code>{INSPECT_COMMAND}</code>
           </pre>
 
@@ -85,7 +85,7 @@ export function CLIInstallSection() {
             <summary className="cursor-pointer select-none font-semibold text-slate-100">
               View install.sh excerpt
             </summary>
-            <pre className="mt-3 overflow-x-auto text-[11px] leading-relaxed text-slate-300">
+            <pre className="mt-3 w-full max-w-full overflow-x-hidden text-[11px] leading-relaxed text-slate-300 whitespace-pre-wrap break-words">
               <code>{INSTALLER_EXCERPT}</code>
             </pre>
           </details>
@@ -94,7 +94,7 @@ export function CLIInstallSection() {
             <p className="text-xs font-semibold uppercase tracking-wider text-blue-200">
               OpenClaw / Agent Example
             </p>
-            <pre className="mt-2 overflow-x-auto text-xs leading-relaxed text-blue-100">
+            <pre className="mt-2 w-full max-w-full overflow-x-hidden text-xs leading-relaxed text-blue-100 whitespace-pre-wrap break-words">
               <code>{AGENT_EXAMPLE}</code>
             </pre>
           </div>
