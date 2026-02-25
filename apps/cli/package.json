@@ -1,0 +1,12 @@
+{
+  "name": "cli",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "generate:tokens": "pnpm --filter @repo/invoice-config generate:cli",
+    "build": "pnpm run generate:tokens && mkdir -p dist .cache/go-build .cache/go-mod && GOCACHE=\"$(pwd)/.cache/go-build\" GOMODCACHE=\"$(pwd)/.cache/go-mod\" go build -buildvcs=false -o dist/weave ./cmd/weave",
+    "test": "pnpm run generate:tokens && mkdir -p .cache/go-build .cache/go-mod && GOCACHE=\"$(pwd)/.cache/go-build\" GOMODCACHE=\"$(pwd)/.cache/go-mod\" go test ./...",
+    "lint": "pnpm run generate:tokens && mkdir -p .cache/go-build .cache/go-mod && GOCACHE=\"$(pwd)/.cache/go-build\" GOMODCACHE=\"$(pwd)/.cache/go-mod\" go vet ./...",
+    "check-types": "pnpm run generate:tokens && mkdir -p .cache/go-build .cache/go-mod && GOCACHE=\"$(pwd)/.cache/go-build\" GOMODCACHE=\"$(pwd)/.cache/go-mod\" go build -buildvcs=false ./..."
+  }
+}

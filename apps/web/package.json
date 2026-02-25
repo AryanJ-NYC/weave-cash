@@ -16,6 +16,7 @@
   "dependencies": {
     "@defuse-protocol/one-click-sdk-typescript": "^0.1.15",
     "@repo/database": "workspace:*",
+    "@repo/invoice-config": "workspace:*",
     "@t3-oss/env-nextjs": "^0.13.10",
     "@tanstack/react-query": "^5.90.21",
     "class-variance-authority": "^0.7.1",

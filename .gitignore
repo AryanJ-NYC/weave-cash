@@ -38,3 +38,6 @@ dist/
 
 # local git worktrees
 .worktrees/
+
+# go cli local cache
+apps/cli/.cache/
