@@ -1,44 +1,37 @@
 # Publishing
 
-This document describes how to publish `weave` releases and install via Homebrew.
+This document describes how to publish `weave` and distribute it via a hosted install script.
 
 ## Release Model
 
 - Release artifacts are created by GoReleaser.
-- GitHub Releases are published from this repo (`AryanJ-NYC/weave-cash`).
-- Homebrew formula updates are pushed to tap repo (`AryanJ-NYC/homebrew-tap`).
+- GitHub Releases are published from `AryanJ-NYC/weave-cash`.
+- Users install with:
+
+```bash
+curl -fsSL --proto '=https' --tlsv1.2 https://www.weavecash.com/install.sh | bash
+```
+
+- Installer script location in this repo: `/Users/aryanjabbari/Documents/projects/weave-cash/apps/web/public/install.sh`
 
 ## Files In This Repo
 
 - GoReleaser config: `/Users/aryanjabbari/Documents/projects/weave-cash/.goreleaser.yaml`
 - Release workflow: `/Users/aryanjabbari/Documents/projects/weave-cash/.github/workflows/release-cli.yml`
+- Installer script: `/Users/aryanjabbari/Documents/projects/weave-cash/apps/web/public/install.sh`
+- Install guide: `/Users/aryanjabbari/Documents/projects/weave-cash/apps/cli/docs/INSTALL.md`
 
 ## One-Time Setup
 
-### 1) Create Homebrew tap repository
+### 1) Ensure installer is deployed from web app
 
-Create: `https://github.com/AryanJ-NYC/homebrew-tap`
+`install.sh` must be reachable at:
 
-Expected layout in tap repo after first release:
+- `https://www.weavecash.com/install.sh`
 
-```text
-homebrew-tap/
-  Formula/
-    weave.rb
-```
+Because the script lives in `apps/web/public/install.sh`, it will be served at `/install.sh` by Next.js after deployment.
 
-### 2) Add GitHub Actions secret
-
-In `AryanJ-NYC/weave-cash` repo settings:
-
-- Secret name: `HOMEBREW_TAP_GITHUB_TOKEN`
-- Value: a PAT that can push to `AryanJ-NYC/homebrew-tap`
-
-Recommended token permissions:
-
-- Repository contents: Read and write (for tap repo)
-
-### 3) Ensure CLI is release-ready
+### 2) Ensure CLI is release-ready
 
 From repo root:
 
@@ -64,23 +57,17 @@ Workflow: `.github/workflows/release-cli.yml`
 
 - Trigger: tag push matching `v*`
 - Runs GoReleaser with `.goreleaser.yaml`
-- Publishes binaries/checksums to GitHub Release
-- Commits/updates `Formula/weave.rb` in `AryanJ-NYC/homebrew-tap`
+- Publishes archives and `checksums.txt` to the GitHub Release
 
-## Install Via Homebrew
+## Installer Behavior Contract
 
-```bash
-brew tap AryanJ-NYC/tap
-brew install weave
-weave --help
-```
+`install.sh` performs these steps:
 
-Upgrade:
-
-```bash
-brew update
-brew upgrade weave
-```
+1. Resolves version (`WEAVE_VERSION` override or latest GitHub release tag)
+2. Detects OS/arch (`darwin|linux` + `amd64|arm64`)
+3. Downloads matching tarball and `checksums.txt`
+4. Verifies SHA-256 checksum
+5. Installs binary to `WEAVE_INSTALL_DIR`, `/usr/local/bin`, or `$HOME/.local/bin`
 
 ## Dry-Run Before Tagging (Optional)
 
@@ -94,24 +81,27 @@ This validates packaging locally without publishing a real release.
 
 ## Troubleshooting
 
-### Homebrew formula not updated
-
-- Verify `HOMEBREW_TAP_GITHUB_TOKEN` exists and has write access to tap repo.
-- Check release workflow logs for GoReleaser brew publishing errors.
-
 ### Tag pushed but no release
 
 - Confirm tag matches `v*` pattern.
 - Confirm workflow run started in Actions tab.
 
-### `brew install weave` fails
+### Installer fails to find release assets
 
-- Run `brew update`.
-- Confirm tap is added: `brew tap` should include `AryanJ-NYC/tap`.
-- Confirm latest formula exists in tap repo: `Formula/weave.rb`.
+- Confirm release artifacts include expected names:
+  - `weave_<version>_darwin_amd64.tar.gz`
+  - `weave_<version>_darwin_arm64.tar.gz`
+  - `weave_<version>_linux_amd64.tar.gz`
+  - `weave_<version>_linux_arm64.tar.gz`
+  - `checksums.txt`
+- Confirm release tag format is `vX.Y.Z`.
+
+### `install.sh` URL is not reachable
+
+- Confirm latest web deployment includes `/public/install.sh`.
+- Visit `https://www.weavecash.com/install.sh` directly and verify it returns script text.
 
 ## Notes
 
 - Binary name is `weave`.
 - GoReleaser currently builds darwin/linux for amd64/arm64.
-- If formula name collisions appear in wider ecosystems, migrate name in `.goreleaser.yaml` and docs together.

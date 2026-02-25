@@ -87,6 +87,28 @@ Status change event:
 }
 ```
 
+## `tokens`
+Lists available token/network combinations and network shorthands.
+
+```json
+{
+  "tokens": ["BTC", "ETH", "SOL", "USDC", "USDT"],
+  "networks": ["Bitcoin", "Ethereum", "Solana"],
+  "tokenNetworkMap": {
+    "BTC": ["Bitcoin"],
+    "ETH": ["Ethereum"],
+    "SOL": ["Solana"],
+    "USDC": ["Ethereum", "Solana"],
+    "USDT": ["Ethereum", "Solana"]
+  },
+  "networkAliases": {
+    "Bitcoin": ["btc"],
+    "Ethereum": ["eth"],
+    "Solana": ["sol"]
+  }
+}
+```
+
 Terminal event:
 
 ```json

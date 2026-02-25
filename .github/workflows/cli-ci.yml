@@ -4,12 +4,20 @@ on:
   pull_request:
     paths:
       - "apps/cli/**"
+      - "packages/invoice-config/**"
+      - "apps/web/public/install.sh"
+      - ".goreleaser.yaml"
+      - ".github/workflows/release-cli.yml"
       - ".github/workflows/cli-ci.yml"
   push:
     branches:
       - master
     paths:
       - "apps/cli/**"
+      - "packages/invoice-config/**"
+      - "apps/web/public/install.sh"
+      - ".goreleaser.yaml"
+      - ".github/workflows/release-cli.yml"
       - ".github/workflows/cli-ci.yml"
 
 concurrency:
@@ -23,6 +31,20 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Generate CLI token maps from shared config
+        run: pnpm --filter @repo/invoice-config generate:cli
+
+      - name: Verify generated CLI token maps are committed
+        run: git diff --exit-code apps/cli/internal/cmd/tokens_generated.go
 
       - name: Setup Go
         uses: actions/setup-go@v5
@@ -40,3 +62,22 @@ jobs:
       - name: Build CLI binary
         working-directory: apps/cli
         run: go build ./cmd/weave
+
+  installer-smoke:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate installer shell syntax
+        run: bash -n apps/web/public/install.sh
+
+      - name: Run installer dry run
+        run: WEAVE_INSTALL_DRY_RUN=1 WEAVE_VERSION=v0.0.0 bash apps/web/public/install.sh

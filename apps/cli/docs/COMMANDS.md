@@ -38,6 +38,11 @@ Create a new invoice via `POST /api/invoices`.
 |---|---|
 | `--receive-network` | Required for multi-network tokens (`USDC`, `USDT`); optional for single-network tokens (`BTC`, `ETH`, `SOL`) |
 
+Network values accept full names and shorthands (case-insensitive):
+- `Bitcoin` or `BTC`
+- `Ethereum` or `ETH`
+- `Solana` or `SOL`
+
 ### Optional flags
 - `--description`
 - `--buyer-name`
@@ -72,6 +77,8 @@ Generate payment instructions via `POST /api/invoices/[id]/quote`.
 - `--pay-network`
 - `--refund-address`
 
+`--pay-network` accepts `Bitcoin|BTC`, `Ethereum|ETH`, and `Solana|SOL` (case-insensitive).
+
 ### Example
 ```bash
 ./apps/cli/dist/weave quote 9c74e9a6-... \
@@ -105,3 +112,16 @@ Polling mode:
 
 ## `weave get <invoice-id>`
 Alias of `status` (same behavior and flags).
+
+## `weave tokens`
+List supported tokens and networks from the shared source of truth.
+
+### Example (JSON default)
+```bash
+./apps/cli/dist/weave tokens
+```
+
+### Example (`--human`)
+```bash
+./apps/cli/dist/weave tokens --human
+```

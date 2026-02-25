@@ -55,7 +55,7 @@ func newCreateCommand(opts *GlobalOptions) *cobra.Command {
 	}
 
 	createCmd.Flags().StringVar(&request.ReceiveToken, "receive-token", "", "Token merchant wants to receive (e.g. BTC)")
-	createCmd.Flags().StringVar(&request.ReceiveNetwork, "receive-network", "", "Network merchant wants to receive on (e.g. Bitcoin)")
+	createCmd.Flags().StringVar(&request.ReceiveNetwork, "receive-network", "", "Network merchant wants to receive on (e.g. Bitcoin or BTC)")
 	createCmd.Flags().StringVar(&request.Amount, "amount", "", "Invoice amount")
 	createCmd.Flags().StringVar(&request.WalletAddress, "wallet-address", "", "Merchant wallet address")
 	createCmd.Flags().StringVar(&request.Description, "description", "", "Optional invoice description")
@@ -83,7 +83,7 @@ func resolveReceiveNetwork(token string, receiveNetwork string) (string, error) 
 		})
 	}
 
-	network := strings.TrimSpace(receiveNetwork)
+	network := normalizeNetworkName(receiveNetwork)
 	if network == "" {
 		if len(validNetworks) == 1 {
 			return validNetworks[0], nil
@@ -107,12 +107,4 @@ func resolveReceiveNetwork(token string, receiveNetwork string) (string, error) 
 	}
 
 	return network, nil
-}
-
-var tokenNetworkMap = map[string][]string{
-	"USDC": {"Ethereum", "Solana"},
-	"USDT": {"Ethereum", "Solana"},
-	"ETH":  {"Ethereum"},
-	"BTC":  {"Bitcoin"},
-	"SOL":  {"Solana"},
 }

@@ -11,7 +11,8 @@
 - Errors and exit codes: `docs/ERRORS-AND-EXIT-CODES.md`
 - Architecture: `docs/ARCHITECTURE.md`
 - Development and CI: `docs/DEVELOPMENT.md`
-- Publishing and Homebrew: `docs/PUBLISHING.md`
+- Install guide: `docs/INSTALL.md`
+- Publishing and releases: `docs/PUBLISHING.md`
 
 ## Product Model
 - Auth-free API (no API keys)
@@ -56,6 +57,7 @@ go run ./cmd/weave --help
 Token/network behavior:
 - For tokens with one valid network (`BTC`, `ETH`, `SOL`), `--receive-network` is optional and auto-inferred.
 - For tokens with multiple networks (`USDC`, `USDT`), `--receive-network` is required.
+- Network flags accept full names or shorthands: `Bitcoin|BTC`, `Ethereum|ETH`, `Solana|SOL` (case-insensitive).
 - If you provide an invalid token/network pair, the CLI fails before making an API request.
 
 Example for a multi-network token:
@@ -86,6 +88,12 @@ Example for a multi-network token:
 ### Poll status
 ```bash
 ./apps/cli/dist/weave status <invoice-id> --watch
+```
+
+### List supported tokens/networks
+```bash
+./apps/cli/dist/weave tokens
+./apps/cli/dist/weave tokens --human
 ```
 
 Polling defaults:

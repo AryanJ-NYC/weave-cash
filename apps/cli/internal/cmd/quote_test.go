@@ -14,6 +14,7 @@ import (
 func TestQuoteCommandReturnsQuoteJSON(t *testing.T) {
 	t.Helper()
 
+	var requestBody map[string]any
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
 			t.Fatalf("expected POST, got %s", r.Method)
@@ -21,7 +22,13 @@ func TestQuoteCommandReturnsQuoteJSON(t *testing.T) {
 		if r.URL.Path != "/api/invoices/inv_1/quote" {
 			t.Fatalf("unexpected path %s", r.URL.Path)
 		}
-		_, _ = io.ReadAll(r.Body)
+		bodyBytes, err := io.ReadAll(r.Body)
+		if err != nil {
+			t.Fatalf("failed reading request body: %v", err)
+		}
+		if err := json.Unmarshal(bodyBytes, &requestBody); err != nil {
+			t.Fatalf("request body is not valid JSON: %v", err)
+		}
 
 		w.Header().Set("Content-Type", "application/json")
 		_, _ = w.Write([]byte(`{"depositAddress":"0xdep","depositMemo":"memo","amountIn":"10","amountOut":"0.01","timeEstimate":"2m","expiresAt":"2026-02-21T00:00:00.000Z"}`))
@@ -47,6 +54,9 @@ func TestQuoteCommandReturnsQuoteJSON(t *testing.T) {
 	}
 	if payload["depositAddress"] != "0xdep" {
 		t.Fatalf("expected depositAddress 0xdep, got %v", payload["depositAddress"])
+	}
+	if requestBody["payNetwork"] != "Ethereum" {
+		t.Fatalf("expected canonical payNetwork Ethereum, got %v", requestBody["payNetwork"])
 	}
 }
 
@@ -79,5 +89,40 @@ func TestQuoteCommandMapsAPIErrorToExitCodeOne(t *testing.T) {
 	}
 	if exitErr.ExitCode != 1 {
 		t.Fatalf("expected exit code 1, got %d", exitErr.ExitCode)
+	}
+}
+
+func TestQuoteCommandAcceptsPayNetworkAlias(t *testing.T) {
+	t.Helper()
+
+	var requestBody map[string]any
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		bodyBytes, err := io.ReadAll(r.Body)
+		if err != nil {
+			t.Fatalf("failed reading request body: %v", err)
+		}
+		if err := json.Unmarshal(bodyBytes, &requestBody); err != nil {
+			t.Fatalf("request body is not valid JSON: %v", err)
+		}
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"depositAddress":"0xdep","depositMemo":"memo","amountIn":"10","amountOut":"0.01","timeEstimate":"2m","expiresAt":"2026-02-21T00:00:00.000Z"}`))
+	}))
+	defer server.Close()
+
+	_, _, err := executeRootCommand(
+		t,
+		"quote",
+		"inv_1",
+		"--pay-token", "USDC",
+		"--pay-network", "eth",
+		"--refund-address", "0xrefund",
+		"--api-url", server.URL,
+	)
+	if err != nil {
+		t.Fatalf("quote command returned error: %v", err)
+	}
+
+	if requestBody["payNetwork"] != "Ethereum" {
+		t.Fatalf("expected canonical payNetwork Ethereum, got %v", requestBody["payNetwork"])
 	}
 }

@@ -1,0 +1,21 @@
+{
+  "name": "@repo/invoice-config",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "exports": {
+    ".": {
+      "import": "./src/index.ts",
+      "types": "./src/index.ts"
+    },
+    "./tokens.json": "./tokens.json"
+  },
+  "scripts": {
+    "generate:cli": "node ./scripts/generate-cli-tokens.mjs",
+    "check-types": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "typescript": "5.9.2"
+  }
+}

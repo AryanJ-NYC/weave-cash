@@ -9,7 +9,8 @@ This folder is the canonical CLI documentation set for `/apps/cli`.
 - Exit codes and error payloads: `ERRORS-AND-EXIT-CODES.md`
 - Architecture and internals: `ARCHITECTURE.md`
 - Development and CI workflow: `DEVELOPMENT.md`
-- Publishing and Homebrew: `PUBLISHING.md`
+- Install guide: `INSTALL.md`
+- Publishing and release process: `PUBLISHING.md`
 
 ## Scope
 This docs set covers the Go binary `weave` only.

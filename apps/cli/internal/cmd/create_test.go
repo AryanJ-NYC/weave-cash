@@ -138,3 +138,43 @@ func TestCreateCommandRejectsInvalidNetworkForToken(t *testing.T) {
 		t.Fatalf("expected zero network calls, got %d", hits)
 	}
 }
+
+func TestCreateCommandAcceptsReceiveNetworkAlias(t *testing.T) {
+	t.Helper()
+
+	var requestBody map[string]any
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			t.Fatalf("expected POST, got %s", r.Method)
+		}
+		bodyBytes, err := io.ReadAll(r.Body)
+		if err != nil {
+			t.Fatalf("failed reading request body: %v", err)
+		}
+		if err := json.Unmarshal(bodyBytes, &requestBody); err != nil {
+			t.Fatalf("request body is not valid JSON: %v", err)
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+		_, _ = w.Write([]byte(`{"id":"inv_alias_test"}`))
+	}))
+	defer server.Close()
+
+	_, _, err := executeRootCommand(
+		t,
+		"create",
+		"--receive-token", "USDC",
+		"--receive-network", "eth",
+		"--amount", "5",
+		"--wallet-address", "0xmerchant",
+		"--api-url", server.URL,
+	)
+	if err != nil {
+		t.Fatalf("create command returned error: %v", err)
+	}
+
+	if requestBody["receiveNetwork"] != "Ethereum" {
+		t.Fatalf("expected canonical receiveNetwork Ethereum, got %v", requestBody["receiveNetwork"])
+	}
+}

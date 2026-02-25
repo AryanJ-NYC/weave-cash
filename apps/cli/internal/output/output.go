@@ -20,6 +20,13 @@ type CreateOutput struct {
 	InvoiceURL string `json:"invoiceUrl"`
 }
 
+type TokensOutput struct {
+	Tokens          []string            `json:"tokens"`
+	Networks        []string            `json:"networks"`
+	TokenNetworkMap map[string][]string `json:"tokenNetworkMap"`
+	NetworkAliases  map[string][]string `json:"networkAliases"`
+}
+
 func NewRenderer(out io.Writer, human bool) *Renderer {
 	return &Renderer{out: out, human: human}
 }
@@ -80,6 +87,37 @@ func (r *Renderer) PrintWatchEvent(payload watch.Event) error {
 			payload.Status,
 			suffix,
 		)
+		return err
+	}
+
+	return r.printJSON(payload)
+}
+
+func (r *Renderer) PrintTokens(payload TokensOutput) error {
+	if r.human {
+		var builder strings.Builder
+		builder.WriteString("tokens:\n")
+		for _, token := range payload.Tokens {
+			networks := payload.TokenNetworkMap[token]
+			builder.WriteString(
+				fmt.Sprintf("- %s (%s)\n", token, strings.Join(networks, ", ")),
+			)
+		}
+
+		builder.WriteString("\nnetworks:\n")
+		for _, network := range payload.Networks {
+			aliases := payload.NetworkAliases[network]
+			if len(aliases) == 0 {
+				builder.WriteString(fmt.Sprintf("- %s\n", network))
+				continue
+			}
+
+			builder.WriteString(
+				fmt.Sprintf("- %s (%s)\n", network, strings.Join(aliases, ", ")),
+			)
+		}
+
+		_, err := io.WriteString(r.out, builder.String())
 		return err
 	}
 

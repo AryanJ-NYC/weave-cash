@@ -22,6 +22,9 @@ func newQuoteCommand(opts *GlobalOptions) *cobra.Command {
 					"error": "api-url cannot be empty",
 				})
 			}
+			request.PayToken = strings.ToUpper(strings.TrimSpace(request.PayToken))
+			request.PayNetwork = normalizeNetworkName(request.PayNetwork)
+			request.RefundAddress = strings.TrimSpace(request.RefundAddress)
 
 			invoiceID := args[0]
 			client := api.NewClient(opts.APIURL, nil)
@@ -42,7 +45,7 @@ func newQuoteCommand(opts *GlobalOptions) *cobra.Command {
 	}
 
 	quoteCmd.Flags().StringVar(&request.PayToken, "pay-token", "", "Token customer will pay with (e.g. USDC)")
-	quoteCmd.Flags().StringVar(&request.PayNetwork, "pay-network", "", "Network customer will pay on (e.g. Ethereum)")
+	quoteCmd.Flags().StringVar(&request.PayNetwork, "pay-network", "", "Network customer will pay on (e.g. Ethereum or ETH)")
 	quoteCmd.Flags().StringVar(&request.RefundAddress, "refund-address", "", "Refund address for the paying wallet")
 
 	_ = quoteCmd.MarkFlagRequired("pay-token")
