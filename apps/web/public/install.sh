@@ -43,7 +43,7 @@ main() {
   fi
 
   temp_dir="$(mktemp -d)"
-  trap 'rm -rf "${temp_dir}"' EXIT
+  trap "rm -rf '${temp_dir}'" EXIT
 
   archive_path="${temp_dir}/${archive}"
   checksums_path="${temp_dir}/checksums.txt"
@@ -98,13 +98,12 @@ normalize_version() {
 
 resolve_latest_version() {
   local response
-  local authorization_header=()
 
   if [[ -n "${GITHUB_TOKEN:-}" ]]; then
-    authorization_header=("-H" "Authorization: Bearer ${GITHUB_TOKEN}")
+    response="$(curl -fsSL --proto '=https' --tlsv1.2 -H "Authorization: Bearer ${GITHUB_TOKEN}" "${LATEST_RELEASE_API_URL}")"
+  else
+    response="$(curl -fsSL --proto '=https' --tlsv1.2 "${LATEST_RELEASE_API_URL}")"
   fi
-
-  response="$(curl -fsSL --proto '=https' --tlsv1.2 "${authorization_header[@]}" "${LATEST_RELEASE_API_URL}")"
 
   local version
   version="$(printf '%s\n' "${response}" | sed -nE 's/^[[:space:]]*"tag_name"[[:space:]]*:[[:space:]]*"([^"]+)".*/\1/p' | head -n 1)"
