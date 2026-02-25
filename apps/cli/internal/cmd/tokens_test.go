@@ -24,15 +24,31 @@ func TestTokensCommandReturnsJSON(t *testing.T) {
 		t.Fatalf("stdout is not valid JSON: %v\nstdout=%s", err, stdout)
 	}
 
-	if len(payload.Tokens) != 5 {
-		t.Fatalf("expected 5 tokens, got %d", len(payload.Tokens))
+	if len(payload.Tokens) != len(tokenNetworkMap) {
+		t.Fatalf("expected %d tokens, got %d", len(tokenNetworkMap), len(payload.Tokens))
 	}
-	if payload.TokenNetworkMap["USDC"][0] != "Ethereum" {
-		t.Fatalf("expected USDC first network Ethereum, got %v", payload.TokenNetworkMap["USDC"])
+	if !containsString(payload.TokenNetworkMap["USDT"], "Tron") {
+		t.Fatalf("expected USDT to include Tron, got %v", payload.TokenNetworkMap["USDT"])
+	}
+	if payload.TokenNetworkMap["ZEC"][0] != "Zcash" {
+		t.Fatalf("expected ZEC network Zcash, got %v", payload.TokenNetworkMap["ZEC"])
 	}
 	if payload.NetworkAliases["Ethereum"][0] != "eth" {
 		t.Fatalf("expected Ethereum alias eth, got %v", payload.NetworkAliases["Ethereum"])
 	}
+	if payload.NetworkAliases["Zcash"][0] != "zec" {
+		t.Fatalf("expected Zcash alias zec, got %v", payload.NetworkAliases["Zcash"])
+	}
+}
+
+func containsString(values []string, expected string) bool {
+	for _, value := range values {
+		if value == expected {
+			return true
+		}
+	}
+
+	return false
 }
 
 func TestTokensCommandReturnsHumanOutput(t *testing.T) {
