@@ -2,12 +2,16 @@ import {
   OneClickService,
   TokenResponse,
 } from '@defuse-protocol/one-click-sdk-typescript';
-import { TOKEN_NETWORK_MAP, type Token, type Network } from '@/lib/invoice/tokens';
+import {
+  TOKEN_NETWORK_MAP,
+  type Token,
+  type Network,
+} from '@/lib/invoice/tokens';
 import { initNearSdk } from './client';
 
 export async function getDefuseAssetId(
   token: Token,
-  network: Network,
+  network: Network
 ): Promise<string> {
   const match = await findToken(token, network);
   if (!match) {
@@ -18,13 +22,14 @@ export async function getDefuseAssetId(
 
 export async function toSmallestUnits(
   amount: string,
-  token: Token,
+  token: Token
 ): Promise<string> {
   const decimals = await getTokenDecimals(token);
   const [whole = '0', fraction = ''] = amount.split('.');
   const paddedFraction = fraction.padEnd(decimals, '0').slice(0, decimals);
   return (
-    BigInt(whole) * 10n ** BigInt(decimals) + BigInt(paddedFraction)
+    BigInt(whole) * 10n ** BigInt(decimals) +
+    BigInt(paddedFraction)
   ).toString();
 }
 
@@ -39,13 +44,11 @@ export async function getTokenDecimals(token: Token): Promise<number> {
 
 async function findToken(
   token: Token,
-  network: Network,
+  network: Network
 ): Promise<TokenResponse | undefined> {
   const tokens = await getTokens();
   const blockchain = NETWORK_TO_BLOCKCHAIN[network];
-  return tokens.find(
-    (t) => t.symbol === token && t.blockchain === blockchain,
-  );
+  return tokens.find((t) => t.symbol === token && t.blockchain === blockchain);
 }
 
 let cachedTokens: Promise<Array<TokenResponse>> | null = null;
@@ -66,7 +69,7 @@ function getTokens(): Promise<Array<TokenResponse>> {
       cachedTokens = null;
       cacheExpiry = 0;
       throw error;
-    },
+    }
   );
   cacheExpiry = Infinity;
   return cachedTokens;

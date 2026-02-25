@@ -23,8 +23,8 @@ importers:
   apps/web:
     dependencies:
       '@defuse-protocol/one-click-sdk-typescript':
-        specifier: ^0.1.15
-        version: 0.1.15
+        specifier: ^0.1.16
+        version: 0.1.16
       '@repo/database':
         specifier: workspace:*
         version: link:../../packages/database
@@ -334,8 +334,8 @@ packages:
     resolution: {integrity: sha512-LwdZHpScM4Qz8Xw2iKSzS+cfglZzJGvofQICy7W7v4caru4EaAmyUuO6BGrbyQ2mYV11W0U8j5mBhd14dd3B0A==}
     engines: {node: '>=6.9.0'}
 
-  '@defuse-protocol/one-click-sdk-typescript@0.1.15':
-    resolution: {integrity: sha512-cVwmBiTQdjyA+nPOrw+AKQjRK1uCfRNVM9RXeWtcKRCXzwNuEyu34hhqOl2mWwBHnqFZEO3iz3kYK+SomEbMgA==}
+  '@defuse-protocol/one-click-sdk-typescript@0.1.16':
+    resolution: {integrity: sha512-uro+FN+6S/8GMNfd+Xbvhk3OgbNM2au57Zy8+aJmco0BhAB9irzQGeyf/qX9yIY0e+msgMvS3pP/tmm16I9IVw==}
     engines: {node: '>=16', pnpm: '>=8'}
 
   '@dotenvx/dotenvx@1.52.0':
@@ -4614,7 +4614,7 @@ snapshots:
       '@babel/helper-string-parser': 7.27.1
       '@babel/helper-validator-identifier': 7.28.5
 
-  '@defuse-protocol/one-click-sdk-typescript@0.1.15':
+  '@defuse-protocol/one-click-sdk-typescript@0.1.16':
     dependencies:
       axios: 1.13.5
       form-data: 4.0.5

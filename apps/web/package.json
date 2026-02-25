@@ -14,7 +14,7 @@
     "react-doctor": "npx -y react-doctor@latest . --yes --no-ami"
   },
   "dependencies": {
-    "@defuse-protocol/one-click-sdk-typescript": "^0.1.15",
+    "@defuse-protocol/one-click-sdk-typescript": "^0.1.16",
     "@repo/database": "workspace:*",
     "@repo/invoice-config": "workspace:*",
     "@t3-oss/env-nextjs": "^0.13.10",
