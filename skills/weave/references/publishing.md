@@ -42,6 +42,12 @@ Use this command template:
 clawhub publish skills/weave --version 0.1.0 --changelog "Initial publish: full Weave invoice lifecycle skill (create, quote, status/watch), JSON-first guidance, runtime token discovery."
 ```
 
+Quick script:
+
+```bash
+bash skills/weave/scripts/publish-clawhub.sh 0.1.0
+```
+
 ## Versioning Rules
 
 - First release default: `0.1.0`
@@ -98,6 +104,13 @@ Optional end-to-end install check:
 
 ```bash
 npm_config_cache=/tmp/npm-cache npx -y skills add AryanJ-NYC/weave-cash@weave --yes --agent claude-code
+```
+
+Quick script:
+
+```bash
+bash skills/weave/scripts/check-skills-sh.sh
+RUN_INSTALL_CHECK=1 bash skills/weave/scripts/check-skills-sh.sh
 ```
 
 ## Operational Notes
