@@ -9,6 +9,12 @@ metadata:
         - weave
     emoji: "🧶"
     homepage: "https://www.weavecash.com"
+  clawdbot:
+    requires:
+      bins:
+        - weave
+    emoji: "🧶"
+    homepage: "https://www.weavecash.com"
 ---
 
 # Weave
@@ -27,6 +33,13 @@ Use `weave` for full Weave Cash invoice lifecycle workflows:
 - Prefer machine-readable JSON output. Use `--human` only when explicitly requested.
 - Never expose secrets (private keys, tokens, JWTs) in outputs.
 - Treat network/API calls as failure-prone and handle non-zero exits explicitly.
+
+## When Not To Use
+
+- Do not use this skill for fiat invoice or fiat settlement workflows.
+- Do not use this skill for editing Weave web UI/frontend code.
+- Do not use this skill for unrelated wallet custody or private-key management tasks.
+- Do not use this skill when the user wants non-Weave payment rails.
 
 ## Preflight
 

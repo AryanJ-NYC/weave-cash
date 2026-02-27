@@ -2,7 +2,7 @@
 
 This guide is for publishing:
 
-- Skill path: `/Users/aryanjabbari/Documents/projects/weave-cash/skills/weave`
+- Skill path: `skills/weave` (repo-relative)
 - Skill name: `weave`
 
 ## Prerequisites
@@ -17,6 +17,7 @@ This guide is for publishing:
 3. Validate frontmatter and metadata:
    - `name: weave`
    - `metadata.openclaw.requires.bins` includes `weave`
+   - `metadata.clawdbot.requires.bins` includes `weave`
 
 ## Pre-Publish Checks
 
@@ -30,7 +31,7 @@ du -sh skills/weave
 Optional structure validation (if `PyYAML` is available):
 
 ```bash
-python3 /Users/aryanjabbari/.codex/skills/.system/skill-creator/scripts/quick_validate.py /Users/aryanjabbari/Documents/projects/weave-cash/skills/weave
+PYTHONPATH=/tmp/skill-validate-deps python3 ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py skills/weave
 ```
 
 ## Publish Command
@@ -38,7 +39,7 @@ python3 /Users/aryanjabbari/.codex/skills/.system/skill-creator/scripts/quick_va
 Use this command template:
 
 ```bash
-clawhub publish /Users/aryanjabbari/Documents/projects/weave-cash/skills/weave --version 0.1.0 --changelog "Initial publish: full Weave invoice lifecycle skill (create, quote, status/watch), JSON-first guidance, runtime token discovery."
+clawhub publish skills/weave --version 0.1.0 --changelog "Initial publish: full Weave invoice lifecycle skill (create, quote, status/watch), JSON-first guidance, runtime token discovery."
 ```
 
 ## Versioning Rules
@@ -78,6 +79,25 @@ clawhub inspect weave --files
 
 ```bash
 clawhub search weave
+```
+
+## skills.sh Listing Notes
+
+- `skills.sh` indexes skills from public GitHub repositories.
+- This skill should resolve as `AryanJ-NYC/weave-cash@weave`.
+- Indexing is not always immediate after push/publish; allow a short delay.
+
+Validation commands:
+
+```bash
+npm_config_cache=/tmp/npm-cache npx -y skills add AryanJ-NYC/weave-cash@weave --list
+npm_config_cache=/tmp/npm-cache npx -y skills find "weave cash"
+```
+
+Optional end-to-end install check:
+
+```bash
+npm_config_cache=/tmp/npm-cache npx -y skills add AryanJ-NYC/weave-cash@weave --yes --agent claude-code
 ```
 
 ## Operational Notes
