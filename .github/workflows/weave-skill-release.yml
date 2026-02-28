@@ -1,0 +1,115 @@
+name: Weave Skill Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Skill version (semver, e.g. 0.1.1)"
+        required: true
+        default: "0.1.1"
+      changelog:
+        description: "Release changelog"
+        required: true
+        default: "Security-hardening release for weave skill install guidance and publish checks."
+      publish_to_clawhub:
+        description: "Publish to Clawhub"
+        type: boolean
+        required: true
+        default: false
+      create_git_tag:
+        description: "Create and push git tag (v<version>)"
+        type: boolean
+        required: true
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: weave-skill-release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate release scripts syntax
+        run: |
+          bash -n skills/weave/scripts/security-check.sh
+          bash -n skills/weave/scripts/publish-clawhub.sh
+          bash -n skills/weave/scripts/check-skills-sh.sh
+          bash -n skills/weave/scripts/release.sh
+
+      - name: Run skill security checks
+        run: bash skills/weave/scripts/security-check.sh
+
+      - name: Verify skills.sh listing visibility
+        run: bash skills/weave/scripts/check-skills-sh.sh
+
+  tag:
+    needs: validate
+    if: ${{ inputs.create_git_tag }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Create and push weave skill tag
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          if ! [[ "${VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Invalid semver: ${VERSION}"
+            exit 1
+          fi
+
+          TAG_NAME="v${VERSION}"
+          if git rev-parse -q --verify "refs/tags/${TAG_NAME}" >/dev/null; then
+            echo "Tag already exists: ${TAG_NAME}"
+            exit 1
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "${TAG_NAME}" -m "weave skill ${VERSION}"
+          git push origin "${TAG_NAME}"
+
+  publish:
+    needs: validate
+    if: ${{ inputs.publish_to_clawhub }}
+    runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ inputs.version }}
+      CHANGELOG: ${{ inputs.changelog }}
+      CLAWHUB_TOKEN: ${{ secrets.CLAWHUB_TOKEN }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Validate required secret
+        run: |
+          if [[ -z "${CLAWHUB_TOKEN}" ]]; then
+            echo "Missing required secret: CLAWHUB_TOKEN"
+            exit 1
+          fi
+
+      - name: Login to Clawhub with token
+        run: npm_config_cache=/tmp/npm-cache npx -y clawhub login --token "${CLAWHUB_TOKEN}"
+
+      - name: Publish weave skill
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash skills/weave/scripts/publish-clawhub.sh "${VERSION}" "${CHANGELOG}"

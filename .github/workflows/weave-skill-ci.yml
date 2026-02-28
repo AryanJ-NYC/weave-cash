@@ -1,0 +1,37 @@
+name: Weave Skill CI
+
+on:
+  pull_request:
+    paths:
+      - "skills/weave/**"
+      - ".github/workflows/weave-skill-ci.yml"
+      - ".github/workflows/weave-skill-release.yml"
+  push:
+    branches:
+      - master
+    paths:
+      - "skills/weave/**"
+      - ".github/workflows/weave-skill-ci.yml"
+      - ".github/workflows/weave-skill-release.yml"
+
+concurrency:
+  group: weave-skill-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate script syntax
+        run: |
+          bash -n skills/weave/scripts/security-check.sh
+          bash -n skills/weave/scripts/publish-clawhub.sh
+          bash -n skills/weave/scripts/check-skills-sh.sh
+          bash -n skills/weave/scripts/release.sh
+
+      - name: Run weave skill security checks
+        run: bash skills/weave/scripts/security-check.sh
