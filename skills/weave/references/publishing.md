@@ -18,8 +18,10 @@ This guide is for publishing:
    - `name: weave`
    - `metadata.openclaw.requires.bins` includes `weave`
    - `metadata.clawdbot.requires.bins` includes `weave`
-   - `metadata.openclaw.install` uses `kind: node` with package `weave-cash-cli`
-   - `metadata.clawdbot.install` uses `kind: node` with package `weave-cash-cli`
+   - `metadata.openclaw.install` includes preferred `kind: go` with module `github.com/AryanJ-NYC/weave-cash/apps/cli/cmd/weave`
+   - `metadata.openclaw.install` includes fallback `kind: node` with package `weave-cash-cli`
+   - `metadata.clawdbot.install` includes preferred `kind: go` with module `github.com/AryanJ-NYC/weave-cash/apps/cli/cmd/weave`
+   - `metadata.clawdbot.install` includes fallback `kind: node` with package `weave-cash-cli`
 
 ## Pre-Publish Checks
 
@@ -186,6 +188,6 @@ Notes:
 ## Operational Notes
 
 - Keep crypto-only scope; do not add fiat assumptions.
-- Publish `weave-cash-cli` before publishing skill versions that reference it.
+- Keep `weave-cash-cli` published and current for npm fallback installs.
 - Runtime token/network support can drift from local docs; `weave tokens` is the live source of truth.
 - Do not publish secrets or credential-bearing examples in skill files.

@@ -1,6 +1,9 @@
 name: Weave Skill Release
 
 on:
+  push:
+    tags:
+      - 'v*'
   workflow_dispatch:
     inputs:
       version:
@@ -30,7 +33,42 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  resolve:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.meta.outputs.version }}
+      changelog: ${{ steps.meta.outputs.changelog }}
+      should_publish: ${{ steps.meta.outputs.should_publish }}
+      should_create_tag: ${{ steps.meta.outputs.should_create_tag }}
+
+    steps:
+      - name: Resolve release metadata
+        id: meta
+        run: |
+          if [[ "${GITHUB_EVENT_NAME}" == "push" ]]; then
+            VERSION="${GITHUB_REF_NAME#v}"
+            CHANGELOG="Automated release for weave skill ${VERSION}."
+            SHOULD_PUBLISH="true"
+            SHOULD_CREATE_TAG="false"
+          else
+            VERSION="${{ inputs.version }}"
+            CHANGELOG="${{ inputs.changelog }}"
+            SHOULD_PUBLISH="${{ inputs.publish_to_clawhub }}"
+            SHOULD_CREATE_TAG="${{ inputs.create_git_tag }}"
+          fi
+
+          if ! [[ "${VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Invalid semver: ${VERSION}"
+            exit 1
+          fi
+
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "changelog=${CHANGELOG}" >> "$GITHUB_OUTPUT"
+          echo "should_publish=${SHOULD_PUBLISH}" >> "$GITHUB_OUTPUT"
+          echo "should_create_tag=${SHOULD_CREATE_TAG}" >> "$GITHUB_OUTPUT"
+
   validate:
+    needs: resolve
     runs-on: ubuntu-latest
 
     steps:
@@ -51,8 +89,10 @@ jobs:
         run: bash skills/weave/scripts/check-skills-sh.sh
 
   tag:
-    needs: validate
-    if: ${{ inputs.create_git_tag }}
+    needs:
+      - resolve
+      - validate
+    if: ${{ needs.resolve.outputs.should_create_tag == 'true' }}
     runs-on: ubuntu-latest
 
     steps:
@@ -63,7 +103,7 @@ jobs:
 
       - name: Create and push weave skill tag
         env:
-          VERSION: ${{ inputs.version }}
+          VERSION: ${{ needs.resolve.outputs.version }}
         run: |
           if ! [[ "${VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             echo "Invalid semver: ${VERSION}"
@@ -82,12 +122,14 @@ jobs:
           git push origin "${TAG_NAME}"
 
   publish:
-    needs: validate
-    if: ${{ inputs.publish_to_clawhub }}
+    needs:
+      - resolve
+      - validate
+    if: ${{ needs.resolve.outputs.should_publish == 'true' }}
     runs-on: ubuntu-latest
     env:
-      VERSION: ${{ inputs.version }}
-      CHANGELOG: ${{ inputs.changelog }}
+      VERSION: ${{ needs.resolve.outputs.version }}
+      CHANGELOG: ${{ needs.resolve.outputs.changelog }}
       CLAWHUB_TOKEN: ${{ secrets.CLAWHUB_TOKEN }}
 
     steps:

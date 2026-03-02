@@ -8,10 +8,14 @@ metadata:
       bins:
         - weave
     install:
+      - kind: go
+        module: github.com/AryanJ-NYC/weave-cash/apps/cli/cmd/weave
+        bins:
+          - weave
       - id: node
         kind: node
         package: weave-cash-cli
-        label: Install Weave CLI (npm)
+        label: Fallback: Install Weave CLI (npm)
         bins:
           - weave
     emoji: '🧶'
@@ -21,10 +25,14 @@ metadata:
       bins:
         - weave
     install:
+      - kind: go
+        module: github.com/AryanJ-NYC/weave-cash/apps/cli/cmd/weave
+        bins:
+          - weave
       - id: node
         kind: node
         package: weave-cash-cli
-        label: Install Weave CLI (npm)
+        label: Fallback: Install Weave CLI (npm)
         bins:
           - weave
     emoji: '🧶'
@@ -74,11 +82,18 @@ weave tokens
 3. If `weave` is missing, provide compliant install guidance and ask before running:
 
 ```bash
+go install github.com/AryanJ-NYC/weave-cash/apps/cli/cmd/weave@latest
+weave --help
+```
+
+If Go is unavailable, use npm fallback:
+
+```bash
 npm i -g weave-cash-cli
 weave --help
 ```
 
-If npm is unavailable, report npm as a hard prerequisite for this skill.
+If both Go and npm are unavailable, report the missing prerequisites.
 
 ## Compliant Install Policy
 

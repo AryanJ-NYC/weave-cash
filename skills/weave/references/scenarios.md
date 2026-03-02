@@ -88,11 +88,18 @@ Expected behavior:
 - if `weave --help` fails with command-not-found, return install guidance:
 
 ```bash
+go install github.com/AryanJ-NYC/weave-cash/apps/cli/cmd/weave@latest
+weave --help
+```
+
+- if Go is not available, fallback to:
+
+```bash
 npm i -g weave-cash-cli
 weave --help
 ```
 
-- if npm is not available, report npm as a hard prerequisite for this skill
+- if both Go and npm are unavailable, report missing prerequisites clearly
 - do not auto-execute install commands
 
 ## Manual Prompt Test Matrix
