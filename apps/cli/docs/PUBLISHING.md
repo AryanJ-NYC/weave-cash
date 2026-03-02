@@ -4,9 +4,8 @@ This document describes how to publish `weave` and distribute it through npm as 
 
 ## Release Model
 
-- GoReleaser builds release archives and publishes GitHub Releases from `AryanJ-NYC/weave-cash`.
-- The CLI release workflow stages platform binaries into `packages/weave-cash-cli/vendor/*`.
-- The workflow publishes `weave-cash-cli` to npm.
+- Local publish script builds platform archives, stages `packages/weave-cash-cli/vendor/*`, and publishes `weave-cash-cli` directly to npm (no git tag required).
+- GoReleaser-based GitHub Releases are still available for tag-driven CI releases.
 - Users install with:
 
 ```bash
@@ -19,27 +18,52 @@ npm i -g weave-cash-cli
 - Release workflow: `/Users/aryanjabbari/Documents/projects/weave-cash/.github/workflows/release-cli.yml`
 - npm package: `/Users/aryanjabbari/Documents/projects/weave-cash/packages/weave-cash-cli`
 - npm package staging script: `/Users/aryanjabbari/Documents/projects/weave-cash/apps/cli/scripts/stage-npm-package.sh`
+- local npm publish script: `/Users/aryanjabbari/Documents/projects/weave-cash/apps/cli/scripts/publish-npm-local.sh`
 - Install guide: `/Users/aryanjabbari/Documents/projects/weave-cash/apps/cli/docs/INSTALL.md`
 
 ## One-Time Setup
 
-1. Add npm publish token:
+1. Ensure npm auth exists on your machine:
 
-- Repository secret: `NPM_TOKEN`
-- Token must have permission to publish `weave-cash-cli`.
+```bash
+npm login
+```
 
-2. Ensure CLI is release-ready:
+2. Ensure CLI is publish-ready:
 
 ```bash
 pnpm --filter cli test
 pnpm --filter cli build
 ```
 
-## Publishing A Release
+## Publish Locally Without A Tag
+
+Run from repo root:
+
+```bash
+bash apps/cli/scripts/publish-npm-local.sh --dry-run 0.1.0
+```
+
+Then publish:
+
+```bash
+bash apps/cli/scripts/publish-npm-local.sh 0.1.0
+```
+
+What this script does:
+
+1. Generates CLI token map.
+2. Builds darwin/linux binaries for amd64/arm64.
+3. Stages binaries into a temporary npm package copy.
+4. Publishes `weave-cash-cli` from that temporary directory.
+
+No git tag is created.
+
+## CI Tag-Driven Release (Optional)
+
+If you want GitHub Releases + npm publish from CI, use `.github/workflows/release-cli.yml`.
 
 ### 1) Create and push a semver tag
-
-From repo root:
 
 ```bash
 git tag v0.1.0
@@ -48,12 +72,10 @@ git push origin v0.1.0
 
 ### 2) What the workflow does
 
-Workflow: `.github/workflows/release-cli.yml`
-
-- Trigger: tag push matching `v*` (or manual dispatch with `version` input)
-- Runs GoReleaser with `.goreleaser.yaml`
-- Stages npm package binaries from `dist/`
-- Publishes `weave-cash-cli` to npm
+1. Trigger: tag push matching `v*` (or manual dispatch with `version` input)
+2. Runs GoReleaser with `.goreleaser.yaml`
+3. Stages npm package binaries from `dist/`
+4. Publishes `weave-cash-cli` to npm
 
 ## NPM Package Behavior Contract
 
@@ -68,32 +90,18 @@ Workflow: `.github/workflows/release-cli.yml`
 
 The launcher selects the matching bundled binary and forwards all CLI args.
 
-## Dry-Run Before Tagging (Optional)
-
-If `goreleaser` is installed locally:
-
-```bash
-goreleaser release --snapshot --clean --config .goreleaser.yaml
-```
-
-Then stage package artifacts locally:
-
-```bash
-bash apps/cli/scripts/stage-npm-package.sh v0.1.0
-```
-
 ## Troubleshooting
 
-### Tag pushed but no release
+### Local publish fails with npm auth
 
-- Confirm tag matches `v*` pattern.
-- Confirm workflow run started in Actions tab.
+- Run `npm whoami` and confirm it prints your npm username.
+- Run `npm login` if needed.
 
 ### npm publish fails
 
-- Confirm `NPM_TOKEN` is present and valid.
 - Confirm package name `weave-cash-cli` is available and not blocked.
-- Confirm staged package version was set correctly from tag (for example `v0.1.0` -> `0.1.0`).
+- Confirm version is incremented and unpublished.
+- Confirm staged package version was set correctly (for example `v0.1.0` -> `0.1.0`).
 
 ### Staging script fails to find release assets
 
@@ -102,7 +110,7 @@ bash apps/cli/scripts/stage-npm-package.sh v0.1.0
   - `weave_<version>_darwin_arm64.tar.gz`
   - `weave_<version>_linux_amd64.tar.gz`
   - `weave_<version>_linux_arm64.tar.gz`
-- Confirm release tag format is `vX.Y.Z`.
+- Confirm version format is `X.Y.Z` or `vX.Y.Z`.
 
 ## Notes
 
