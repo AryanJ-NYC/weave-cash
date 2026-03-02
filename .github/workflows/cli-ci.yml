@@ -5,7 +5,6 @@ on:
     paths:
       - "apps/cli/**"
       - "packages/invoice-config/**"
-      - "apps/web/public/install.sh"
       - ".goreleaser.yaml"
       - ".github/workflows/release-cli.yml"
       - ".github/workflows/cli-ci.yml"
@@ -15,7 +14,6 @@ on:
     paths:
       - "apps/cli/**"
       - "packages/invoice-config/**"
-      - "apps/web/public/install.sh"
       - ".goreleaser.yaml"
       - ".github/workflows/release-cli.yml"
       - ".github/workflows/cli-ci.yml"
@@ -62,22 +60,3 @@ jobs:
       - name: Build CLI binary
         working-directory: apps/cli
         run: go build ./cmd/weave
-
-  installer-smoke:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os:
-          - ubuntu-latest
-          - macos-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Validate installer shell syntax
-        run: bash -n apps/web/public/install.sh
-
-      - name: Run installer dry run
-        run: WEAVE_INSTALL_DRY_RUN=1 WEAVE_VERSION=v0.0.0 bash apps/web/public/install.sh

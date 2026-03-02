@@ -74,21 +74,12 @@ export function CLIInstallSection() {
           </pre>
 
           <p className="mt-4 text-xs text-slate-400">
-            Prefer to inspect before running?
+            Install globally from npm and verify with:
           </p>
 
           <pre className="mt-2 w-full max-w-full overflow-x-hidden rounded-xl border border-slate-800 bg-slate-950 p-4 text-xs leading-relaxed text-slate-200 whitespace-pre-wrap break-words">
-            <code>{INSPECT_COMMAND}</code>
+            <code>{VERIFY_COMMAND}</code>
           </pre>
-
-          <details className="mt-5 rounded-xl border border-slate-800 bg-slate-950/70 p-4 text-xs text-slate-300">
-            <summary className="cursor-pointer select-none font-semibold text-slate-100">
-              View install.sh excerpt
-            </summary>
-            <pre className="mt-3 w-full max-w-full overflow-x-hidden text-[11px] leading-relaxed text-slate-300 whitespace-pre-wrap break-words">
-              <code>{INSTALLER_EXCERPT}</code>
-            </pre>
-          </details>
 
           <div className="mt-5 rounded-xl border border-blue-400/20 bg-blue-500/10 p-4">
             <p className="text-xs font-semibold uppercase tracking-wider text-blue-200">
@@ -105,16 +96,12 @@ export function CLIInstallSection() {
 }
 
 const INSTALL_COMMAND =
-  'curl -fsSL --proto "=https" --tlsv1.2 https://www.weavecash.com/install.sh | bash';
+  'npm i -g weave-cash-cli';
 
-const INSPECT_COMMAND =
-  'curl -fsSL --proto "=https" --tlsv1.2 -o /tmp/weave-install.sh https://www.weavecash.com/install.sh\nless /tmp/weave-install.sh\nbash /tmp/weave-install.sh';
+const VERIFY_COMMAND = 'weave --help';
 
 const AGENT_EXAMPLE =
   '# OpenClaw or any shell-capable agent\nweave create --receive-token USDC --receive-network Ethereum --amount 125 --wallet-address 0xYourWallet\nweave quote <invoice-id> --pay-token ETH --pay-network Ethereum --refund-address 0xRefundWallet\nweave status <invoice-id> --watch';
-
-const INSTALLER_EXCERPT =
-  '#!/usr/bin/env bash\nset -euo pipefail\n\n# Detect OS/arch, resolve latest version\n# Download release tarball + checksums.txt\n# Verify SHA-256 before install\n# Install to /usr/local/bin or ~/.local/bin';
 
 const SECTION_POINTS = [
   'Built for businesses searching how to accept crypto payments without adding local config or API keys.',

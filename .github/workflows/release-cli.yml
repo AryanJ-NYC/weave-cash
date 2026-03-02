@@ -3,8 +3,13 @@ name: CLI Release
 on:
   push:
     tags:
-      - "v*"
+      - 'v*'
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to publish (for example v0.1.4). Defaults to ref name.'
+        required: false
+        type: string
 
 permissions:
   contents: write
@@ -28,7 +33,27 @@ jobs:
         uses: goreleaser/goreleaser-action@v6
         with:
           distribution: goreleaser
-          version: "~> v2"
+          version: '~> v2'
           args: release --clean --config .goreleaser.yaml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Stage npm package
+        run: |
+          RELEASE_VERSION="${{ inputs.version }}"
+          if [[ -z "${RELEASE_VERSION}" ]]; then
+            RELEASE_VERSION="${GITHUB_REF_NAME}"
+          fi
+          bash apps/cli/scripts/stage-npm-package.sh "${RELEASE_VERSION}" "dist" "packages/weave-cash-cli"
+
+      - name: Publish npm package
+        working-directory: packages/weave-cash-cli
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

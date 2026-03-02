@@ -1,29 +1,16 @@
 # Install
 
-## Quick Install (Latest)
+## Quick Install (npm)
 
 ```bash
-curl -fsSL --proto '=https' --tlsv1.2 https://www.weavecash.com/install.sh | bash
+npm i -g weave-cash-cli
 ```
 
 ## Install A Specific Version
 
 ```bash
-WEAVE_VERSION=v0.1.0 curl -fsSL --proto '=https' --tlsv1.2 https://www.weavecash.com/install.sh | bash
+npm i -g weave-cash-cli@0.1.0
 ```
-
-Version values without `v` also work (for example `0.1.0`).
-
-## Custom Install Directory
-
-```bash
-WEAVE_INSTALL_DIR="$HOME/bin" curl -fsSL --proto '=https' --tlsv1.2 https://www.weavecash.com/install.sh | bash
-```
-
-Default install directory resolution:
-
-1. `/usr/local/bin` if writable
-2. `$HOME/.local/bin` otherwise
 
 ## Verify Install
 
@@ -31,36 +18,23 @@ Default install directory resolution:
 weave --help
 ```
 
-## Safe/Inspectable Install Flow
-
-```bash
-curl -fsSL --proto '=https' --tlsv1.2 -o /tmp/weave-install.sh https://www.weavecash.com/install.sh
-less /tmp/weave-install.sh
-bash /tmp/weave-install.sh
-```
-
 ## Uninstall
 
-Delete the binary from where it was installed:
-
 ```bash
-rm -f /usr/local/bin/weave
-# or
-rm -f "$HOME/.local/bin/weave"
-# or your custom WEAVE_INSTALL_DIR path
+npm uninstall -g weave-cash-cli
 ```
 
 ## Troubleshooting
 
 ### `weave: command not found`
 
-Add install directory to PATH. Example:
+Ensure your npm global bin path is in `PATH`:
 
 ```bash
-export PATH="$HOME/.local/bin:$PATH"
+npm bin -g
 ```
 
-Then restart your shell.
+Then add that directory to your shell profile and restart your shell.
 
 ### Unsupported OS/arch
 

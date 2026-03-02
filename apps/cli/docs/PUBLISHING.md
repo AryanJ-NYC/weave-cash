@@ -1,39 +1,34 @@
 # Publishing
 
-This document describes how to publish `weave` and distribute it via a hosted install script.
+This document describes how to publish `weave` and distribute it through npm as `weave-cash-cli`.
 
 ## Release Model
 
-- Release artifacts are created by GoReleaser.
-- GitHub Releases are published from `AryanJ-NYC/weave-cash`.
+- GoReleaser builds release archives and publishes GitHub Releases from `AryanJ-NYC/weave-cash`.
+- The CLI release workflow stages platform binaries into `packages/weave-cash-cli/vendor/*`.
+- The workflow publishes `weave-cash-cli` to npm.
 - Users install with:
 
 ```bash
-curl -fsSL --proto '=https' --tlsv1.2 https://www.weavecash.com/install.sh | bash
+npm i -g weave-cash-cli
 ```
-
-- Installer script location in this repo: `/Users/aryanjabbari/Documents/projects/weave-cash/apps/web/public/install.sh`
 
 ## Files In This Repo
 
 - GoReleaser config: `/Users/aryanjabbari/Documents/projects/weave-cash/.goreleaser.yaml`
 - Release workflow: `/Users/aryanjabbari/Documents/projects/weave-cash/.github/workflows/release-cli.yml`
-- Installer script: `/Users/aryanjabbari/Documents/projects/weave-cash/apps/web/public/install.sh`
+- npm package: `/Users/aryanjabbari/Documents/projects/weave-cash/packages/weave-cash-cli`
+- npm package staging script: `/Users/aryanjabbari/Documents/projects/weave-cash/apps/cli/scripts/stage-npm-package.sh`
 - Install guide: `/Users/aryanjabbari/Documents/projects/weave-cash/apps/cli/docs/INSTALL.md`
 
 ## One-Time Setup
 
-### 1) Ensure installer is deployed from web app
+1. Add npm publish token:
 
-`install.sh` must be reachable at:
+- Repository secret: `NPM_TOKEN`
+- Token must have permission to publish `weave-cash-cli`.
 
-- `https://www.weavecash.com/install.sh`
-
-Because the script lives in `apps/web/public/install.sh`, it will be served at `/install.sh` by Next.js after deployment.
-
-### 2) Ensure CLI is release-ready
-
-From repo root:
+2. Ensure CLI is release-ready:
 
 ```bash
 pnpm --filter cli test
@@ -55,19 +50,23 @@ git push origin v0.1.0
 
 Workflow: `.github/workflows/release-cli.yml`
 
-- Trigger: tag push matching `v*`
+- Trigger: tag push matching `v*` (or manual dispatch with `version` input)
 - Runs GoReleaser with `.goreleaser.yaml`
-- Publishes archives and `checksums.txt` to the GitHub Release
+- Stages npm package binaries from `dist/`
+- Publishes `weave-cash-cli` to npm
 
-## Installer Behavior Contract
+## NPM Package Behavior Contract
 
-`install.sh` performs these steps:
+`weave-cash-cli` includes:
 
-1. Resolves version (`WEAVE_VERSION` override or latest GitHub release tag)
-2. Detects OS/arch (`darwin|linux` + `amd64|arm64`)
-3. Downloads matching tarball and `checksums.txt`
-4. Verifies SHA-256 checksum
-5. Installs binary to `WEAVE_INSTALL_DIR`, `/usr/local/bin`, or `$HOME/.local/bin`
+1. Node launcher (`bin/weave.js`)
+2. Bundled binaries for:
+   - `darwin-amd64`
+   - `darwin-arm64`
+   - `linux-amd64`
+   - `linux-arm64`
+
+The launcher selects the matching bundled binary and forwards all CLI args.
 
 ## Dry-Run Before Tagging (Optional)
 
@@ -77,7 +76,11 @@ If `goreleaser` is installed locally:
 goreleaser release --snapshot --clean --config .goreleaser.yaml
 ```
 
-This validates packaging locally without publishing a real release.
+Then stage package artifacts locally:
+
+```bash
+bash apps/cli/scripts/stage-npm-package.sh v0.1.0
+```
 
 ## Troubleshooting
 
@@ -86,20 +89,20 @@ This validates packaging locally without publishing a real release.
 - Confirm tag matches `v*` pattern.
 - Confirm workflow run started in Actions tab.
 
-### Installer fails to find release assets
+### npm publish fails
 
-- Confirm release artifacts include expected names:
+- Confirm `NPM_TOKEN` is present and valid.
+- Confirm package name `weave-cash-cli` is available and not blocked.
+- Confirm staged package version was set correctly from tag (for example `v0.1.0` -> `0.1.0`).
+
+### Staging script fails to find release assets
+
+- Confirm release artifacts include:
   - `weave_<version>_darwin_amd64.tar.gz`
   - `weave_<version>_darwin_arm64.tar.gz`
   - `weave_<version>_linux_amd64.tar.gz`
   - `weave_<version>_linux_arm64.tar.gz`
-  - `checksums.txt`
 - Confirm release tag format is `vX.Y.Z`.
-
-### `install.sh` URL is not reachable
-
-- Confirm latest web deployment includes `/public/install.sh`.
-- Visit `https://www.weavecash.com/install.sh` directly and verify it returns script text.
 
 ## Notes
 

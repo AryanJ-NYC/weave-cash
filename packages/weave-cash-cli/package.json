@@ -1,0 +1,40 @@
+{
+  "name": "weave-cash-cli",
+  "version": "0.0.0",
+  "description": "Weave Cash CLI binary wrapper.",
+  "license": "AGPL-3.0-or-later",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AryanJ-NYC/weave-cash.git"
+  },
+  "bugs": {
+    "url": "https://github.com/AryanJ-NYC/weave-cash/issues"
+  },
+  "homepage": "https://www.weavecash.com",
+  "bin": {
+    "weave": "bin/weave.js"
+  },
+  "files": [
+    "bin/",
+    "vendor/",
+    "README.md"
+  ],
+  "os": [
+    "darwin",
+    "linux"
+  ],
+  "cpu": [
+    "x64",
+    "arm64"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "weave",
+    "weave-cash",
+    "cli",
+    "crypto",
+    "invoices"
+  ]
+}
