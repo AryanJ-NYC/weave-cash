@@ -19,7 +19,7 @@ describe('blog post registry', () => {
 
     expect(getBlogPostBySlug('openclaw-agent-skill')).toMatchObject({
       href: '/blogs/openclaw-agent-skill',
-      title: 'Announcing the WeaveCash OpenClaw Agent Skill',
+      title: 'WeaveCash OpenClaw Agent Skill',
       category: 'Launch',
     });
 

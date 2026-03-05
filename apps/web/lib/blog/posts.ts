@@ -18,11 +18,10 @@ export const BLOG_POSTS: readonly BlogPost[] = sortBlogPosts([
   {
     slug: 'openclaw-agent-skill',
     href: '/blogs/openclaw-agent-skill',
-    title: 'Announcing the WeaveCash OpenClaw Agent Skill',
-    pageTitle: 'Announcing the WeaveCash OpenClaw Agent Skill',
-    seoTitle: 'Announcing the WeaveCash OpenClaw Agent Skill | WeaveCash',
-    description:
-      'Zero sign-in, wallet-native payments for OpenClaw agents with non-custodial settlement, supported multi-chain assets, and open-source payment rails.',
+    title: 'WeaveCash OpenClaw Agent Skill',
+    pageTitle: 'WeaveCash OpenClaw Agent Skill',
+    seoTitle: 'WeaveCash OpenClaw Agent Skill | WeaveCash',
+    description: 'Zero Sign-In. Non-Custodial. Autonomous Payments for AI Agents.',
     category: 'Launch',
     publishedAt: '2026-03-05',
     publishedLabel: 'March 5, 2026',
