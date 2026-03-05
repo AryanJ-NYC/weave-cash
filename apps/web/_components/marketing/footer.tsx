@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { BLOG_INDEX_HREF } from '@/lib/blog/posts';
 
 export function Footer() {
   return (
@@ -113,7 +114,7 @@ const PRODUCT_LINKS = [
 
 const COMPANY_LINKS = [
   { label: 'About', href: '/about' },
-  { label: 'Blog', href: '/blogs/web3-payments' },
+  { label: 'Blog', href: BLOG_INDEX_HREF },
 ];
 
 const LEGAL_LINKS = [

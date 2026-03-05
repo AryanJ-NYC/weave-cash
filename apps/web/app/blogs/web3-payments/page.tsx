@@ -1,16 +1,18 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ContentPage } from '@/_components/content-page';
+import { getRequiredBlogPostBySlug } from '@/lib/blog/posts';
+
+const web3PaymentsPost = getRequiredBlogPostBySlug('web3-payments');
 
 export const metadata: Metadata = {
-  title: 'The Definitive Guide to Web3 Payments | WeaveCash',
-  description:
-    'Learn how to accept crypto payments as a business with zero fees, self-custody swaps, and cross-chain settlement powered by NEAR Intents.',
+  title: web3PaymentsPost.seoTitle,
+  description: web3PaymentsPost.description,
 };
 
 export default function Web3PaymentsBlogPage() {
   return (
-    <ContentPage title="The Definitive Guide to Web3 Payments: Scale Your Business with Seamless, Fee-Free Crypto">
+    <ContentPage title={web3PaymentsPost.pageTitle}>
       <p>
         As we move into 2026, the landscape of digital finance is shifting from experimental
         &ldquo;crypto payments&rdquo; to a robust infrastructure known as{' '}

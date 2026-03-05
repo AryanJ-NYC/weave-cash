@@ -106,6 +106,17 @@ className =
   'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6 shadow-sm';
 ```
 
+### Editorial / Blog Cards
+
+Use this pattern for marketing content lists that need a little more personality than standard app cards while staying inside the core palette.
+
+```tsx
+className =
+  'group relative overflow-hidden rounded-[2rem] border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-7 md:p-8 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600';
+```
+
+Featured variants can add a subtle blue radial gradient overlay, but the base surfaces should still read as white/slate cards first.
+
 ### Invoice Payment Tracker (Progressive Single-Card Pattern)
 
 Use one continuous card for the invoice payment journey instead of multiple step cards.
