@@ -30,8 +30,17 @@ func TestTokensCommandReturnsJSON(t *testing.T) {
 	if !containsString(payload.TokenNetworkMap["USDT"], "Tron") {
 		t.Fatalf("expected USDT to include Tron, got %v", payload.TokenNetworkMap["USDT"])
 	}
+	if !containsString(payload.TokenNetworkMap["ETH"], "Base") {
+		t.Fatalf("expected ETH to include Base, got %v", payload.TokenNetworkMap["ETH"])
+	}
+	if !containsString(payload.TokenNetworkMap["USDC"], "Base") {
+		t.Fatalf("expected USDC to include Base, got %v", payload.TokenNetworkMap["USDC"])
+	}
 	if payload.TokenNetworkMap["ZEC"][0] != "Zcash" {
 		t.Fatalf("expected ZEC network Zcash, got %v", payload.TokenNetworkMap["ZEC"])
+	}
+	if !containsString(payload.Networks, "Base") {
+		t.Fatalf("expected networks to include Base, got %v", payload.Networks)
 	}
 	if payload.NetworkAliases["Ethereum"][0] != "eth" {
 		t.Fatalf("expected Ethereum alias eth, got %v", payload.NetworkAliases["Ethereum"])
@@ -62,11 +71,14 @@ func TestTokensCommandReturnsHumanOutput(t *testing.T) {
 	if !strings.Contains(stdout, "tokens:\n") {
 		t.Fatalf("expected tokens section in human output, got:\n%s", stdout)
 	}
-	if !strings.Contains(stdout, "- USDC (Ethereum, Solana)") {
+	if !strings.Contains(stdout, "- USDC (Ethereum, Solana, Base)") {
 		t.Fatalf("expected USDC line in human output, got:\n%s", stdout)
 	}
 	if !strings.Contains(stdout, "networks:\n") {
 		t.Fatalf("expected networks section in human output, got:\n%s", stdout)
+	}
+	if !strings.Contains(stdout, "- Base\n") {
+		t.Fatalf("expected Base network line in human output, got:\n%s", stdout)
 	}
 	if !strings.Contains(stdout, "- Ethereum (eth)") {
 		t.Fatalf("expected Ethereum alias line in human output, got:\n%s", stdout)

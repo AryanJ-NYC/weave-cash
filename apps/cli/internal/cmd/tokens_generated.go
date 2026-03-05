@@ -3,16 +3,17 @@ package cmd
 
 var tokenNetworkMap = map[string][]string{
 	"BTC": {"Bitcoin"},
-	"ETH": {"Ethereum"},
+	"ETH": {"Ethereum", "Base"},
 	"PAXG": {"Ethereum"},
 	"SOL": {"Solana"},
-	"USDC": {"Ethereum", "Solana"},
+	"USDC": {"Ethereum", "Solana", "Base"},
 	"USDT": {"Ethereum", "Solana", "Tron"},
 	"XAUT": {"Ethereum"},
 	"ZEC": {"Zcash"},
 }
 
 var canonicalNetworkByAlias = map[string]string{
+	"base": "Base",
 	"bitcoin": "Bitcoin",
 	"btc": "Bitcoin",
 	"eth": "Ethereum",

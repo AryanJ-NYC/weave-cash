@@ -77,6 +77,7 @@ function getTokens(): Promise<Array<TokenResponse>> {
 
 const NETWORK_TO_BLOCKCHAIN: Record<Network, TokenResponse.blockchain> = {
   Ethereum: TokenResponse.blockchain.ETH,
+  Base: TokenResponse.blockchain.BASE,
   Solana: TokenResponse.blockchain.SOL,
   Bitcoin: TokenResponse.blockchain.BTC,
   Zcash: TokenResponse.blockchain.ZEC,

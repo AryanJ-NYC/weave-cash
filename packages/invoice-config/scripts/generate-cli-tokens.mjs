@@ -135,11 +135,19 @@ function buildNetworkAliases(networkCurrencyMap) {
   const aliases = {};
 
   for (const [network, currency] of Object.entries(networkCurrencyMap)) {
-    aliases[network.toLowerCase()] = network;
-    aliases[currency.toLowerCase()] = network;
+    addAlias(aliases, network.toLowerCase(), network);
+    addAlias(aliases, currency.toLowerCase(), network);
   }
 
   return aliases;
+}
+
+function addAlias(aliases, alias, network) {
+  if (alias in aliases) {
+    return;
+  }
+
+  aliases[alias] = network;
 }
 
 function goString(value) {
