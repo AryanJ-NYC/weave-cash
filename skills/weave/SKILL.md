@@ -15,7 +15,7 @@ metadata:
       - id: node
         kind: node
         package: weave-cash-cli
-        label: Fallback: Install Weave CLI (npm)
+        label: "Fallback: Install Weave CLI (npm)"
         bins:
           - weave
     emoji: '🧶'
@@ -32,7 +32,7 @@ metadata:
       - id: node
         kind: node
         package: weave-cash-cli
-        label: Fallback: Install Weave CLI (npm)
+        label: "Fallback: Install Weave CLI (npm)"
         bins:
           - weave
     emoji: '🧶'

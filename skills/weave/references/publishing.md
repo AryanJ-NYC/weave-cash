@@ -150,7 +150,8 @@ For `skills.sh`, "publish" means: push the skill files to the public GitHub repo
 
 Canonical source identifier:
 
-- `AryanJ-NYC/weave-cash@weave`
+- `AryanJ-NYC/weave-cash`
+- Skill selector: `--skill weave`
 
 Steps:
 
@@ -175,14 +176,15 @@ RUN_INSTALL_CHECK=1 bash skills/weave/scripts/check-skills-sh.sh
 Direct `npx` equivalents:
 
 ```bash
-npm_config_cache=/tmp/npm-cache npx -y skills add AryanJ-NYC/weave-cash@weave --list
+npm_config_cache=/tmp/npm-cache npx -y skills add AryanJ-NYC/weave-cash --skill weave --list
 npm_config_cache=/tmp/npm-cache npx -y skills find "weave cash"
-npm_config_cache=/tmp/npm-cache npx -y skills add AryanJ-NYC/weave-cash@weave --yes --agent claude-code
+npm_config_cache=/tmp/npm-cache npx -y skills add AryanJ-NYC/weave-cash --skill weave --yes --agent claude-code
 ```
 
 Notes:
 
 - Search ranking can lag even when source resolution succeeds; rely on `skills add ... --list` as the primary publish signal.
+- Avoid `AryanJ-NYC/weave-cash@weave` in docs and scripts here. In `skills.sh`, the `@weave` suffix is a skill filter, not a branch or subpath selector, so `--skill weave` is the clearer form.
 - This flow is separate from Clawhub registry publish (`clawhub publish ...`).
 
 ## Operational Notes
