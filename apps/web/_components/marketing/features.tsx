@@ -81,7 +81,7 @@ const VALUE_PROPS = [
   {
     title: 'Multi-Chain',
     description:
-      'Accept BTC, ETH, SOL, USDC, and USDT across Bitcoin, Ethereum, and Solana networks.',
+      'Accept BTC, ETH, SOL, USDC, USDT, ZEC, XAUT, and PAXG across supported networks including Bitcoin, Ethereum, Solana, Tron, Zcash, and Base.',
     icon: '🔗',
   },
   {

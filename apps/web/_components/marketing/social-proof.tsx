@@ -5,17 +5,17 @@ export function SocialProof() {
         {/* Supported networks */}
         <div className="mx-auto max-w-3xl text-center">
           <h2 className="text-3xl font-bold tracking-tight text-slate-900 md:text-4xl dark:text-white">
-            One platform, all major chains
+            One platform, across every supported network
           </h2>
           <p className="mt-4 text-lg text-slate-600 dark:text-slate-400">
-            Accept payments from any supported network. NEAR intents handle the
-            cross-chain complexity.
+            Accept payments across Bitcoin, Ethereum, Solana, Tron, Zcash, and
+            Base. NEAR intents handle the cross-chain complexity.
           </p>
         </div>
 
         {/* Chain grid */}
-        <div className="mx-auto mt-12 grid max-w-4xl grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-          {CHAINS.map((chain) => (
+        <div className="mx-auto mt-12 grid max-w-5xl grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+          {NETWORKS.map((chain) => (
             <div
               key={chain.name}
               className="flex flex-col items-center gap-2 rounded-xl border border-slate-200 bg-white p-4 transition-colors hover:border-slate-300 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-slate-700"
@@ -45,10 +45,13 @@ export function SocialProof() {
   );
 }
 
-const CHAINS = [
+const NETWORKS = [
   { name: 'Bitcoin', icon: '₿', color: 'text-orange-500' },
   { name: 'Ethereum', icon: 'Ξ', color: 'text-blue-400' },
   { name: 'Solana', icon: '◎', color: 'text-purple-400' },
+  { name: 'Base', icon: '◯', color: 'text-blue-500' },
+  { name: 'Tron', icon: 'T', color: 'text-rose-500' },
+  { name: 'Zcash', icon: 'Z', color: 'text-yellow-500' },
 ];
 
 const TRUST_BADGES = [

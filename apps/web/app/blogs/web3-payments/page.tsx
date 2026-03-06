@@ -67,8 +67,9 @@ export default function Web3PaymentsBlogPage() {
             Accept the world&rsquo;s major cryptocurrencies, including{' '}
             <strong className="text-slate-900 dark:text-white">BTC, ETH, SOL, and ZEC</strong>,
             alongside stablecoins like{' '}
-            <strong className="text-slate-900 dark:text-white">USDC and USDT</strong> (on Ethereum
-            or Solana). More coins to be added soon!
+            <strong className="text-slate-900 dark:text-white">USDC and USDT</strong> across
+            Ethereum, Solana, Tron, and Base, plus assets like{' '}
+            <strong className="text-slate-900 dark:text-white">XAUT and PAXG</strong>.
           </li>
           <li>
             <strong className="text-slate-900 dark:text-white">Preferred Store of Value</strong>:

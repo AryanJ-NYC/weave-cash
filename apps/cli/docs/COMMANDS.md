@@ -29,19 +29,24 @@ Create a new invoice via `POST /api/invoices`.
 ### Required flags
 | Flag | Notes |
 |---|---|
-| `--receive-token` | One of `USDC`, `USDT`, `ETH`, `BTC`, `SOL` |
+| `--receive-token` | Any supported token listed by `weave tokens` |
 | `--amount` | Positive numeric string |
 | `--wallet-address` | Wallet receiving funds |
 
 ### Conditionally required flag
 | Flag | Rule |
 |---|---|
-| `--receive-network` | Required for multi-network tokens (`USDC`, `USDT`); optional for single-network tokens (`BTC`, `ETH`, `SOL`) |
+| `--receive-network` | Required when the selected token supports more than one network (see `weave tokens`); optional for single-network tokens |
 
 Network values accept full names and shorthands (case-insensitive):
 - `Bitcoin` or `BTC`
 - `Ethereum` or `ETH`
 - `Solana` or `SOL`
+- `Tron` or `TRX`
+- `Zcash` or `ZEC`
+- `Base`
+
+Use `Base` for the Base network. `ETH` remains the Ethereum alias.
 
 ### Optional flags
 - `--description`
@@ -77,7 +82,9 @@ Generate payment instructions via `POST /api/invoices/[id]/quote`.
 - `--pay-network`
 - `--refund-address`
 
-`--pay-network` accepts `Bitcoin|BTC`, `Ethereum|ETH`, and `Solana|SOL` (case-insensitive).
+`--pay-token` must be one of the supported tokens listed by `weave tokens`.
+
+`--pay-network` accepts the same supported network names and shorthands as `weave create`, including `Bitcoin|BTC`, `Ethereum|ETH`, `Solana|SOL`, `Tron|TRX`, `Zcash|ZEC`, and `Base`. Use `Base` for Base; `ETH` still maps to Ethereum.
 
 ### Example
 ```bash

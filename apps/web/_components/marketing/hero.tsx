@@ -63,13 +63,13 @@ export function Hero() {
             </a>
           </div>
 
-          {/* Supported chains */}
+          {/* Popular pay tokens */}
           <div className="mt-12 flex flex-col items-center gap-3">
             <p className="text-sm font-medium text-slate-500 dark:text-slate-500">
-              Supported chains
+              Popular pay tokens
             </p>
             <div className="flex flex-wrap items-center justify-center gap-3">
-              {SUPPORTED_CHAINS.map((chain) => (
+              {POPULAR_PAY_TOKENS.map((chain) => (
                 <div
                   key={chain.name}
                   className="flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm font-medium text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300"
@@ -89,7 +89,7 @@ export function Hero() {
   );
 }
 
-const SUPPORTED_CHAINS = [
+const POPULAR_PAY_TOKENS = [
   { name: 'BTC', icon: '₿' },
   { name: 'ETH', icon: 'Ξ' },
   { name: 'SOL', icon: '◎' },

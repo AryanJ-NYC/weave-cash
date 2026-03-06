@@ -92,22 +92,29 @@ Lists available token/network combinations and network shorthands.
 
 ```json
 {
-  "tokens": ["BTC", "ETH", "SOL", "USDC", "USDT"],
-  "networks": ["Bitcoin", "Ethereum", "Solana"],
+  "tokens": ["BTC", "ETH", "PAXG", "SOL", "USDC", "USDT", "XAUT", "ZEC"],
+  "networks": ["Base", "Bitcoin", "Ethereum", "Solana", "Tron", "Zcash"],
   "tokenNetworkMap": {
     "BTC": ["Bitcoin"],
-    "ETH": ["Ethereum"],
+    "ETH": ["Ethereum", "Base"],
+    "PAXG": ["Ethereum"],
     "SOL": ["Solana"],
-    "USDC": ["Ethereum", "Solana"],
-    "USDT": ["Ethereum", "Solana"]
+    "USDC": ["Ethereum", "Solana", "Base"],
+    "USDT": ["Ethereum", "Solana", "Tron"],
+    "XAUT": ["Ethereum"],
+    "ZEC": ["Zcash"]
   },
   "networkAliases": {
     "Bitcoin": ["btc"],
     "Ethereum": ["eth"],
-    "Solana": ["sol"]
+    "Solana": ["sol"],
+    "Tron": ["trx"],
+    "Zcash": ["zec"]
   }
 }
 ```
+
+`Base` is a supported network, but it does not have an extra shorthand alias in CLI output. Use `Base` as the network value.
 
 Terminal event:
 

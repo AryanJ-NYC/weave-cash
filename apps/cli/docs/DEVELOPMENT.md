@@ -54,4 +54,4 @@ CLI package scripts (`build`, `test`, `lint`, `check-types`) run this generation
 ## Common Pitfalls
 - Running `./cmd/weave` directly: this is not a binary.
 - Forgetting `--` in flag names (for example `--wallet-address`).
-- Omitting `--receive-network` for multi-network receive tokens (`USDC`, `USDT`).
+- Omitting `--receive-network` for multi-network receive tokens (`USDC`, `USDT`, `ETH`).

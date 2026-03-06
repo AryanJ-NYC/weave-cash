@@ -34,15 +34,21 @@ export default function AboutPage() {
           <strong className="text-slate-900 dark:text-white">chain abstraction</strong>.
         </p>
         <p>
-          We provide a seamless interface that allows you to{' '}
-          <strong className="text-slate-900 dark:text-white">accept stablecoin payments</strong>{' '}
-          (like <strong className="text-slate-900 dark:text-white">USDC</strong> and{' '}
-          <strong className="text-slate-900 dark:text-white">USDT</strong>) alongside major
-          cryptocurrencies such as{' '}
-          <strong className="text-slate-900 dark:text-white">Bitcoin (BTC)</strong>,{' '}
-          <strong className="text-slate-900 dark:text-white">Ethereum (ETH)</strong>,{' '}
-          <strong className="text-slate-900 dark:text-white">Solana (SOL)</strong>, and{' '}
-          <strong className="text-slate-900 dark:text-white">Zcash (ZEC)</strong>.
+          We provide a seamless interface that lets you accept payments across{' '}
+          <strong className="text-slate-900 dark:text-white">Bitcoin</strong>,{' '}
+          <strong className="text-slate-900 dark:text-white">Ethereum</strong>,{' '}
+          <strong className="text-slate-900 dark:text-white">Solana</strong>,{' '}
+          <strong className="text-slate-900 dark:text-white">Zcash</strong>,{' '}
+          <strong className="text-slate-900 dark:text-white">Tron</strong>, and{' '}
+          <strong className="text-slate-900 dark:text-white">Base</strong> in assets like{' '}
+          <strong className="text-slate-900 dark:text-white">USDC</strong>,{' '}
+          <strong className="text-slate-900 dark:text-white">USDT</strong>,{' '}
+          <strong className="text-slate-900 dark:text-white">BTC</strong>,{' '}
+          <strong className="text-slate-900 dark:text-white">ETH</strong>,{' '}
+          <strong className="text-slate-900 dark:text-white">SOL</strong>,{' '}
+          <strong className="text-slate-900 dark:text-white">ZEC</strong>,{' '}
+          <strong className="text-slate-900 dark:text-white">XAUT</strong>, and{' '}
+          <strong className="text-slate-900 dark:text-white">PAXG</strong>.
         </p>
       </section>
 
