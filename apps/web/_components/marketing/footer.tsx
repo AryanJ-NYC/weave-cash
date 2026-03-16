@@ -109,7 +109,6 @@ export function Footer() {
 const PRODUCT_LINKS = [
   { label: 'Features', href: '/#how-it-works' },
   { label: 'Supported Chains', href: '/#chains' },
-  { label: 'Pricing', href: '/pricing' },
 ];
 
 const COMPANY_LINKS = [
