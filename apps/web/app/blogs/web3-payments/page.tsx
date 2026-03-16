@@ -2,13 +2,15 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ContentPage } from '@/_components/content-page';
 import { getRequiredBlogPostBySlug } from '@/lib/blog/posts';
+import { buildPageMetadata } from '@/lib/site-metadata';
 
 const web3PaymentsPost = getRequiredBlogPostBySlug('web3-payments');
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: web3PaymentsPost.seoTitle,
   description: web3PaymentsPost.description,
-};
+  path: web3PaymentsPost.href,
+});
 
 export default function Web3PaymentsBlogPage() {
   return (

@@ -1,11 +1,13 @@
 import type { Metadata } from 'next';
 import { ContentPage } from '@/_components/content-page';
+import { buildPageMetadata } from '@/lib/site-metadata';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: 'Privacy Policy | WeaveCash',
   description:
     'WeaveCash Privacy Policy — how we handle your data with Privacy by Design, non-custodial infrastructure, and minimal data collection.',
-};
+  path: '/privacy',
+});
 
 export default function PrivacyPage() {
   return (

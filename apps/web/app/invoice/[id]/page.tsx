@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import {
   Card,
@@ -8,15 +9,22 @@ import {
   CardTitle,
 } from '@/_components/ui/card';
 import { getInvoiceById } from '@/lib/invoice/get-invoice-by-id';
+import { buildInvoiceMetadata } from '@/lib/site-metadata';
 import { CopyLinkButton } from './_components/copy-link-button';
 import { InvoiceQueryProvider } from './_components/invoice-query-provider';
 import { PaymentFlow } from './_components/payment-flow';
 
+export async function generateMetadata({
+  params,
+}: InvoicePageProps): Promise<Metadata> {
+  const { id } = await params;
+
+  return buildInvoiceMetadata(id);
+}
+
 export default async function InvoicePaymentPage({
   params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+}: InvoicePageProps) {
   const { id } = await params;
   const invoice = await getInvoiceById(id);
 
@@ -47,3 +55,7 @@ export default async function InvoicePaymentPage({
     </div>
   );
 }
+
+type InvoicePageProps = {
+  params: Promise<{ id: string }>;
+};

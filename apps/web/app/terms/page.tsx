@@ -1,11 +1,13 @@
 import type { Metadata } from 'next';
 import { ContentPage } from '@/_components/content-page';
+import { buildPageMetadata } from '@/lib/site-metadata';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: 'Terms and Conditions | WeaveCash',
   description:
     'Terms and Conditions for using WeaveCash, a non-custodial crypto payment platform with cross-chain settlement via NEAR Intents.',
-};
+  path: '/terms',
+});
 
 export default function TermsPage() {
   return (

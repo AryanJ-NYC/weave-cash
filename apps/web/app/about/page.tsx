@@ -1,11 +1,13 @@
 import type { Metadata } from 'next';
 import { ContentPage } from '@/_components/content-page';
+import { buildPageMetadata } from '@/lib/site-metadata';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: 'About WeaveCash | Sovereign Web3 Payments',
   description:
     'Learn how WeaveCash empowers merchants, freelancers, and DAOs with self-sovereign, fee-free crypto payments powered by NEAR Intents and chain abstraction.',
-};
+  path: '/about',
+});
 
 export default function AboutPage() {
   return (

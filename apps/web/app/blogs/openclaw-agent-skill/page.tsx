@@ -1,13 +1,15 @@
 import type { Metadata } from 'next';
 import React from 'react';
 import { getRequiredBlogPostBySlug } from '@/lib/blog/posts';
+import { buildPageMetadata } from '@/lib/site-metadata';
 
 const openClawPost = getRequiredBlogPostBySlug('openclaw-agent-skill');
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: openClawPost.seoTitle,
   description: openClawPost.description,
-};
+  path: openClawPost.href,
+});
 
 export default function OpenClawAgentSkillBlogPage() {
   return (

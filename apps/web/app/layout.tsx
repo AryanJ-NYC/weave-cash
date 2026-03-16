@@ -4,6 +4,11 @@ import { Outfit } from 'next/font/google';
 import { Toaster } from 'sonner';
 import { Footer } from '@/_components/marketing';
 import { ShrinkingLogo } from '@/_components/shrinking-logo';
+import {
+  DEFAULT_SITE_DESCRIPTION,
+  DEFAULT_SITE_TITLE,
+  SITE_URL,
+} from '@/lib/site-metadata';
 import './globals.css';
 
 const outfit = Outfit({
@@ -12,13 +17,9 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://weavecash.com'),
-  title: 'Weave Cash - Accept Any Crypto. Store Your Value.',
-  description:
-    'Buyer pays in any coin. Receive your preferred coin. Instantly, via NEAR Intents.',
-  openGraph: {
-    siteName: 'Weave Cash',
-  },
+  metadataBase: new URL(SITE_URL),
+  title: DEFAULT_SITE_TITLE,
+  description: DEFAULT_SITE_DESCRIPTION,
   twitter: {
     card: 'summary_large_image',
   },

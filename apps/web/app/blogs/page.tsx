@@ -2,12 +2,14 @@ import type { Metadata } from 'next';
 import { BookOpenText, Rocket } from 'lucide-react';
 import { BlogPostCard } from './_components/blog-post-card';
 import { BLOG_POSTS } from '@/lib/blog/posts';
+import { buildPageMetadata } from '@/lib/site-metadata';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: 'WeaveCash Blog | Launches and Guides',
   description:
     'Read WeaveCash launch announcements, product notes, and practical guides for sovereign crypto payments.',
-};
+  path: '/blogs',
+});
 
 export default function BlogsPage() {
   const featuredPost = BLOG_POSTS.at(0);
